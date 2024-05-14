@@ -16,7 +16,6 @@ import {
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
       if (!token) {
-        console.log('No token found');
         throw new UnauthorizedException();
       }
       try {
@@ -26,8 +25,6 @@ import {
             secret: jwtConstants.secret
           }
         );
-        // 💡 We're assigning the payload to the request object here
-        // so that we can access it in our route handlers
         request['user'] = payload;
       } catch {
         throw new UnauthorizedException();

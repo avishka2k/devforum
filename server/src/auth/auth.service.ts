@@ -7,22 +7,26 @@ import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dtos/login.dto';
+import { Profile } from 'src/profile/entites/profile.entity';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(Profile) private profileRepository: Repository<Profile>,
         private responseHelperService: ResponseHelperService,
         private jwtService: JwtService,
-    ) {}
+    ) { }
 
     async register(data: RegisterDto) {
-        const userExists = await this.userRepository.findOne({ where: [
-            { email: data.email }, 
-            { username: data.username }
-        ] });
+        const userExists = await this.userRepository.findOne({
+            where: [
+                { email: data.email },
+                { username: data.username }
+            ]
+        });
 
-        if(userExists) {
+        if (userExists) {
             throw new ForbiddenException('User already exists');
         }
 
@@ -32,12 +36,20 @@ export class AuthService {
             ...data,
             password: hashpw,
             created_at: new Date(),
-            updated_at: new Date(),
         });
 
-        return this.responseHelperService.returnSuccess(await this.userRepository.save(newUser));
+        await this.userRepository.save(newUser);
+
+        const newProfile = this.profileRepository.create({
+            id: newUser.id,
+        });
+
+        newProfile.user = newUser;
+
+        await this.profileRepository.save(newProfile);
+        return this.responseHelperService.returnSuccess(newUser);
     }
-    
+
     async signIn(data: LoginDto): Promise<{ access_token: string }> {
         const user = await this.userRepository.findOne({ where: { username: data.username } });
 
@@ -51,17 +63,12 @@ export class AuthService {
         const payload = { sub: user.id, username: user.username };
         await this.updateLastLogin(user);
         return {
-          access_token: await this.jwtService.signAsync(payload),
+            access_token: await this.jwtService.signAsync(payload),
         };
     }
 
-    async updateLastLogin(user: User) {  
+    async updateLastLogin(user: User) {
         user.lst_login = new Date();
         return this.responseHelperService.returnSuccess(await this.userRepository.save(user));
-    }
-
-    async getProfile(userDetails: User) {
-        const user = await this.userRepository.findOne({ where: { username: userDetails.username } });
-        return this.responseHelperService.returnSuccess(user);
     }
 }

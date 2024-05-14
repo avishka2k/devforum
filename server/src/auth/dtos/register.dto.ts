@@ -11,12 +11,10 @@ export class RegisterDto {
     username: string;
 
     @ApiProperty()
-    @IsEmail({}, { message: 'Invalid email' })
-    @IsNotEmpty({ message: 'This field cannot be empty' })
+    @IsEmail({}, {message: 'Email must be an email'})
     email: string;
 
     @ApiProperty()
     @IsNotEmpty({ message: 'This field cannot be empty' })
     password: string;
 }
-
