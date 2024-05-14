@@ -33,6 +33,7 @@ export class ProfileService {
         profile.location = data.location;
         profile.website = data.website;
         profile.user.fullname = data.fullname;
+        profile.user.username = data.username;
 
         await this.userRepository.save(profile.user);
         await this.profileRepository.save(profile);
@@ -40,7 +41,17 @@ export class ProfileService {
         return this.responseHelperService.returnSuccess(profile);
     }
 
-    // async getProfile(profile: Profile) {
-    //     return this.responseHelperService.returnSuccess(await this.profileRepository.findOne({ where: { id: profile.id } }));
-    // }
+    async getProfile(id: number) {
+        const profile = await this.profileRepository.findOne({ where: { id: id }, relations: ['user'] });
+
+        if (!profile) {
+            throw new NotFoundException('Profile not found');
+        }
+
+        if (!profile.user) {
+            throw new NotFoundException('User not found');
+        }
+        
+        return this.responseHelperService.returnSuccess(profile);
+    }
 }
