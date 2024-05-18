@@ -1,11 +1,10 @@
-import { Controller, HttpCode, HttpStatus, Request, UseGuards } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Param, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { Body, Post, Get } from '@nestjs/common';
 import { LoginDto } from './dtos/login.dto';
-import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { UserDto } from 'src/profile/dtos/user.dto';
+import { User } from './entites/user.entity';
 
 @ApiBearerAuth('JWT-auth') 
 @Controller('auth')
@@ -24,4 +23,9 @@ export class AuthController {
     loginUser(@Body() loginDto: LoginDto){
         return this.authService.signIn(loginDto);
     }
+
+    @Get(':id')
+  async getUserWithProfile(@Param('id') id: number): Promise<User> {
+    return this.authService.getUserWithProfile(id);
+  }
 }

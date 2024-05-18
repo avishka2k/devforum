@@ -74,4 +74,11 @@ export class AuthService {
         const update = await this.userRepository.save(user);
         return {user: update};
     }
+
+    async getUserWithProfile(id: number): Promise<User> {
+        return this.userRepository.findOne({
+            where: { id },
+            relations: ['profile'],
+          });
+    }
 }

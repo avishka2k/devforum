@@ -30,7 +30,6 @@ export class Profile {
     @Column({nullable: true})
     updated_at: Date;
 
-    @OneToOne(() => User, user => user.id)
-    @JoinColumn()
+    @OneToOne(() => User, user => user.profile)
     user: User;
 }

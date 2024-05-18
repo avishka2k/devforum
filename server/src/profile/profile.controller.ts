@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Profile } from './entites/profile.entity';
 import { ProfileService } from './profile.service';
-import { UserDto } from './dtos/user.dto';
+import { ProfileDto } from './dtos/profile.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth('JWT-auth') 
@@ -20,7 +20,7 @@ export class ProfileController {
 
     @UseGuards(AuthGuard)
     @Post('update')
-    updateProfile(@Body() dto: UserDto){
+    updateProfile(@Body() dto: ProfileDto){
         return this.profileService.updateProfile(dto);
     }
 }

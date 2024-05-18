@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from './entites/profile.entity';
 import { Repository } from 'typeorm';
-import { UserDto } from './dtos/user.dto';
+import { ProfileDto } from './dtos/profile.dto';
 import { User } from 'src/auth/entites/user.entity';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class ProfileService {
         @InjectRepository(User) private userRepository: Repository<User>,
     ) {}
 
-    async updateProfile(data: UserDto) {
+    async updateProfile(data: ProfileDto) {
         const profile = await this.profileRepository.findOne({ where: { id: data.id }, relations: ['user'] });
 
         if (!profile) {
