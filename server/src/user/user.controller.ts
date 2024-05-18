@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -31,5 +31,15 @@ export class UserController {
     @Put(':id/profile')
     async updateUserProfile(@Param('id') id: number, @Body() profileDto: ProfileDto): Promise<Profile> {
         return this.userService.updateProfile(id, profileDto);
+    }
+
+    @Patch(':id/follow/:followUserId')
+    async followUser(@Param('id') id: number, @Param('followUserId') followUserId: number): Promise<void> {
+      return this.userService.followUser(id, followUserId);
+    }
+  
+    @Patch(':id/unfollow/:unfollowUserId')
+    async unfollowUser(@Param('id') id: number, @Param('unfollowUserId') unfollowUserId: number): Promise<void> {
+      return this.userService.unfollowUser(id, unfollowUserId);
     }
 }

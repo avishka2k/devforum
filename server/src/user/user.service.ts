@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
 import { LoginDto } from './dtos/login.dto';
-import { ProfileDto } from './dtos/profile.dto';
 
 @Injectable()
 export class UserService {
@@ -98,6 +97,27 @@ export class UserService {
         delete user.password;
         await this.profileRepository.save(profile);
         return profile;
+      }
+
+      async followUser(userId: number, followUserId: number): Promise<void> {
+        const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['following'] });
+        const followUser = await this.userRepository.findOne({ where: { id: followUserId } });
+        if (!user || !followUser) {
+          throw new NotFoundException('User not found');
+        }
+    
+        user.following.push(followUser);
+        await this.userRepository.save(user);
+      }
+    
+      async unfollowUser(userId: number, unfollowUserId: number): Promise<void> {
+        const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['following'] });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+    
+        user.following = user.following.filter(followingUser => followingUser.id !== unfollowUserId);
+        await this.userRepository.save(user);
       }
 
 }
