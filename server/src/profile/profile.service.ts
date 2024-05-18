@@ -1,8 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from './entites/profile.entity';
-import { ResponseHelperService } from 'src/response-helper/response-helper.service';
-import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { UserDto } from './dtos/user.dto';
 import { User } from 'src/auth/entites/user.entity';
@@ -12,8 +10,6 @@ export class ProfileService {
     constructor(
         @InjectRepository(Profile) private profileRepository: Repository<Profile>,
         @InjectRepository(User) private userRepository: Repository<User>,
-        private responseHelperService: ResponseHelperService,
-        private jwtService: JwtService,
     ) {}
 
     async updateProfile(data: UserDto) {
@@ -32,13 +28,13 @@ export class ProfileService {
         profile.avatar = data.avatar;
         profile.location = data.location;
         profile.website = data.website;
-        profile.user.fullname = data.fullname;
-        profile.user.username = data.username;
 
         await this.userRepository.save(profile.user);
         await this.profileRepository.save(profile);
 
-        return this.responseHelperService.returnSuccess(profile);
+        delete profile.user.password;
+
+        return {profile: profile};
     }
 
     async getProfile(id: number) {
@@ -51,7 +47,9 @@ export class ProfileService {
         if (!profile.user) {
             throw new NotFoundException('User not found');
         }
+
+        delete profile.user.password;
         
-        return this.responseHelperService.returnSuccess(profile);
+        return {profile: profile}
     }
 }

@@ -3,7 +3,6 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from './entites/profile.entity';
-import { ResponseHelperService } from 'src/response-helper/response-helper.service';
 import { User } from 'src/auth/entites/user.entity';
 
 @Module({
@@ -12,6 +11,6 @@ import { User } from 'src/auth/entites/user.entity';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [ProfileController],
-  providers: [ProfileService, ResponseHelperService]
+  providers: [ProfileService]
 })
 export class ProfileModule {}

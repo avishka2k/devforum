@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable, NotFoundException, UnauthorizedExceptio
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entites/user.entity';
 import { Repository } from 'typeorm';
-import { ResponseHelperService } from 'src/response-helper/response-helper.service';
 import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +13,6 @@ export class AuthService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Profile) private profileRepository: Repository<Profile>,
-        private responseHelperService: ResponseHelperService,
         private jwtService: JwtService,
     ) { }
 
@@ -42,12 +40,16 @@ export class AuthService {
 
         const newProfile = this.profileRepository.create({
             id: newUser.id,
+            fullname: data.fullname,
         });
 
         newProfile.user = newUser;
 
         await this.profileRepository.save(newProfile);
-        return this.responseHelperService.returnSuccess(newUser);
+
+        delete newUser.password;
+
+        return {user: newUser};
     }
 
     async signIn(data: LoginDto): Promise<{ access_token: string }> {
@@ -69,6 +71,7 @@ export class AuthService {
 
     async updateLastLogin(user: User) {
         user.lst_login = new Date();
-        return this.responseHelperService.returnSuccess(await this.userRepository.save(user));
+        const update = await this.userRepository.save(user);
+        return {user: update};
     }
 }

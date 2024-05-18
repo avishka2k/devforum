@@ -13,6 +13,9 @@ export class Profile {
     id: number;
 
     @Column({nullable: true})
+    fullname: string;
+
+    @Column({nullable: true})
     avatar: string;
 
     @Column({nullable: true})

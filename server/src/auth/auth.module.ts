@@ -3,7 +3,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entites/user.entity';
-import { ResponseHelperService } from 'src/response-helper/response-helper.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { Profile } from 'src/profile/entites/profile.entity';
@@ -19,6 +18,6 @@ import { Profile } from 'src/profile/entites/profile.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, ResponseHelperService]
+  providers: [AuthService]
 })
 export class AuthModule {}

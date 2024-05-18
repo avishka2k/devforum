@@ -9,9 +9,6 @@ export class UserDto {
     fullname: string;
 
     @ApiProperty()
-    username: string;
-
-    @ApiProperty()
     bio: string;
 
     @ApiProperty()
