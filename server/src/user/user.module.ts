@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 import { User } from './entites/user.entity';
+import { Profile } from './entites/profile.entity';
+import { jwtConstants } from 'src/auth/constants';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
-import { Profile } from 'src/profile/entites/profile.entity';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { Profile } from 'src/profile/entites/profile.entity';
         signOptions: { expiresIn: '30d' },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService]
+  controllers: [UserController],
+  providers: [UserService]
 })
-export class AuthModule {}
+export class UserModule {}

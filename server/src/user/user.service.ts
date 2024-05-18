@@ -1,20 +1,21 @@
 import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from './entites/user.entity';
-import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Profile } from './entites/profile.entity';
+import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
-import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dtos/login.dto';
-import { Profile } from 'src/profile/entites/profile.entity';
+import { ProfileDto } from './dtos/profile.dto';
 
 @Injectable()
-export class AuthService {
+export class UserService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Profile) private profileRepository: Repository<Profile>,
         private jwtService: JwtService,
-    ) { }
+    ) {}
 
     async register(data: RegisterDto) {
         const userExists = await this.userRepository.findOne({
@@ -44,11 +45,8 @@ export class AuthService {
         });
 
         newProfile.user = newUser;
-
-        await this.profileRepository.save(newProfile);
-
         delete newUser.password;
-
+        await this.profileRepository.save(newProfile);
         return {user: newUser};
     }
 
@@ -76,9 +74,30 @@ export class AuthService {
     }
 
     async getUserWithProfile(id: number): Promise<User> {
-        return this.userRepository.findOne({
+
+        const user = await this.userRepository.findOne({    
             where: { id },
             relations: ['profile'],
-          });
+        });
+        delete user.password;
+        return user;
     }
+
+    async updateProfile(userId: number, profileData: Partial<Profile>): Promise<Profile> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['profile'],
+        });
+        
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+    
+        const profile = user.profile;
+        Object.assign(profile, profileData);
+        delete user.password;
+        await this.profileRepository.save(profile);
+        return profile;
+      }
+
 }

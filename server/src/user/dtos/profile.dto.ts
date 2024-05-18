@@ -3,9 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ProfileDto {
 
     @ApiProperty()
-    id: number;
-    
-    @ApiProperty()
     fullname: string;
 
     @ApiProperty()
