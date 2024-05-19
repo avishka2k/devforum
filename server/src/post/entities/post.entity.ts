@@ -1,11 +1,14 @@
+import { User } from 'src/user/entities/user.entity';
 import { 
     Entity, 
     PrimaryGeneratedColumn, 
-    Column
+    Column,
+    ManyToOne,
+    JoinColumn
 } from 'typeorm';
 
 @Entity({ name: 'posts' })
-export class Post {
+export class BlogPost {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
@@ -20,4 +23,8 @@ export class Post {
 
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
+
+    @ManyToOne(() => User, user => user.posts)
+    @JoinColumn()
+    user: User;
 }
