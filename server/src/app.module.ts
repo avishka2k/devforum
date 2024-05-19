@@ -4,15 +4,17 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
+import { config } from 'dotenv';
+config();
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.MYSQL_HOST,
       port: 3306,
-      username: 'avishka',
-      password: 'avishka2k',
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
       database: 'devforum_db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
