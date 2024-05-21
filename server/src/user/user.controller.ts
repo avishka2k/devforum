@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -8,45 +19,52 @@ import { Profile } from './entities/profile.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
-@ApiBearerAuth('JWT-auth') 
+@ApiBearerAuth('JWT-auth')
 @Controller('user')
 export class UserController {
-    constructor(
-        private userService: UserService,
-    ) {}
+  constructor(private userService: UserService) {}
 
-    @Post('register')
-    createUser(@Body() regDto: RegisterDto){
-        return this.userService.register(regDto);
-    }
+  @Post('register')
+  createUser(@Body() regDto: RegisterDto) {
+    return this.userService.register(regDto);
+  }
 
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    loginUser(@Body() loginDto: LoginDto){
-        return this.userService.signIn(loginDto);
-    }
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  loginUser(@Body() loginDto: LoginDto) {
+    return this.userService.signIn(loginDto);
+  }
 
-    @UseGuards(AuthGuard)
-    @Get(':id')
-    async getUserWithProfile(@Param('id') id: number): Promise<User> {
-        return this.userService.getUserWithProfile(id);
-    }
+  @UseGuards(AuthGuard)
+  @Get(':id')
+  async getUserWithProfile(@Param('id') id: number): Promise<User> {
+    return this.userService.getUserWithProfile(id);
+  }
 
-    @UseGuards(AuthGuard)
-    @Put(':id/profile')
-    async updateUserProfile(@Param('id') id: number, @Body() profileDto: ProfileDto): Promise<Profile> {
-        return this.userService.updateProfile(id, profileDto);
-    }
+  @UseGuards(AuthGuard)
+  @Put(':id/profile')
+  async updateUserProfile(
+    @Param('id') id: number,
+    @Body() profileDto: ProfileDto,
+  ): Promise<Profile> {
+    return this.userService.updateProfile(id, profileDto);
+  }
 
-    @UseGuards(AuthGuard)
-    @Patch(':id/follow/:followUserId')
-    async followUser(@Param('id') id: number, @Param('followUserId') followUserId: number): Promise<void> {
-      return this.userService.followUser(id, followUserId);
-    }
-  
-    @UseGuards(AuthGuard)
-    @Patch(':id/unfollow/:unfollowUserId')
-    async unfollowUser(@Param('id') id: number, @Param('unfollowUserId') unfollowUserId: number): Promise<void> {
-      return this.userService.unfollowUser(id, unfollowUserId);
-    }
+  @UseGuards(AuthGuard)
+  @Patch(':id/follow/:followUserId')
+  async followUser(
+    @Param('id') id: number,
+    @Param('followUserId') followUserId: number,
+  ): Promise<void> {
+    return this.userService.followUser(id, followUserId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch(':id/unfollow/:unfollowUserId')
+  async unfollowUser(
+    @Param('id') id: number,
+    @Param('unfollowUserId') unfollowUserId: number,
+  ): Promise<void> {
+    return this.userService.unfollowUser(id, unfollowUserId);
+  }
 }

@@ -93,6 +93,7 @@ export class UserService {
         }
     
         const profile = user.profile;
+        profile.updated_at = new Date();
         Object.assign(profile, profileData);
         delete user.password;
         await this.profileRepository.save(profile);
