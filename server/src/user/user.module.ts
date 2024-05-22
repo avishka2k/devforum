@@ -3,9 +3,10 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
-import { jwtConstants } from 'src/auth/constants';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { config } from 'dotenv';
+config();
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
     TypeOrmModule.forFeature([Profile]),
     JwtModule.register({
         global: true,
-        secret: jwtConstants.secret,
+        secret: process.env.JWT_SECRET,
         signOptions: { expiresIn: '30d' },
     }),
   ],

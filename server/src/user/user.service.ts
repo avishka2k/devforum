@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from './entities/profile.entity';
@@ -93,6 +93,7 @@ export class UserService {
         }
     
         const profile = user.profile;
+        profile.updated_at = new Date();
         Object.assign(profile, profileData);
         delete user.password;
         await this.profileRepository.save(profile);
