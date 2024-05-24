@@ -8,6 +8,7 @@ import UserFive from '../../images/user/user-05.png';
 
 const chatData: Chat[] = [
   {
+    id: 1,
     avatar: UserOne,
     name: 'Devid Heilo',
     text: 'How are you?',
@@ -16,6 +17,7 @@ const chatData: Chat[] = [
     color: '#10B981',
   },
   {
+    id: 2,
     avatar: UserTwo,
     name: 'Henry Fisher',
     text: 'Waiting for you!',
@@ -24,6 +26,7 @@ const chatData: Chat[] = [
     color: '#DC3545',
   },
   {
+    id: 3,
     avatar: UserFour,
     name: 'Jhon Doe',
     text: "What's up?",
@@ -32,6 +35,7 @@ const chatData: Chat[] = [
     color: '#10B981',
   },
   {
+    id: 4,
     avatar: UserFive,
     name: 'Jane Doe',
     text: 'Great',
@@ -40,6 +44,7 @@ const chatData: Chat[] = [
     color: '#FFBA00',
   },
   {
+    id: 5,
     avatar: UserOne,
     name: 'Jhon Doe',
     text: 'How are you?',
@@ -48,6 +53,7 @@ const chatData: Chat[] = [
     color: '#10B981',
   },
   {
+    id: 6,
     avatar: UserThree,
     name: 'Jhon Doe',
     text: 'How are you?',
@@ -65,11 +71,11 @@ const ChatCard = () => {
       </h4>
 
       <div>
-        {chatData.map((chat, key) => (
+        {chatData.map((chat) => (
           <Link
             to="/"
             className="flex items-center gap-5 py-3 px-7.5 hover:bg-gray-3 dark:hover:bg-meta-4"
-            key={key}
+            key={chat.id}
           >
             <div className="relative h-14 w-14 rounded-full">
               <img src={chat.avatar} alt="User" />

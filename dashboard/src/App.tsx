@@ -32,8 +32,7 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <>
-      <Routes>
+    <Routes>
         <Route
           index
           element={
@@ -151,8 +150,7 @@ function App() {
             </>
           }
         />
-      </Routes>
-    </>
+    </Routes>
   );
 }
 

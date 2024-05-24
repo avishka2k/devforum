@@ -1,4 +1,5 @@
 export type Chat = {
+  id: number;
   avatar: string;
   name: string;
   text: string;
