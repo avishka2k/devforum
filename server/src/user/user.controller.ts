@@ -17,8 +17,8 @@ import { User } from './entities/user.entity';
 import { ProfileDto } from './dtos/profile.dto';
 import { Profile } from './entities/profile.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { VerificationService } from 'src/email/verification/verification.service';
+import { AuthGuard } from '../auth/auth.guard';
+import { VerificationService } from '../email/verification/verification.service';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('user')

@@ -11,7 +11,7 @@ import { PostService } from './post.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { PosDto } from './dtos/post.dto';
 import { BlogPost } from './entities/post.entity';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('post')
