@@ -57,4 +57,7 @@ export class User {
 
   @OneToMany(() => BlogPost, (post) => post.user)
   posts: BlogPost[];
+
+  @Column({ default: false })
+  public isEmailConfirmed: boolean;
 }

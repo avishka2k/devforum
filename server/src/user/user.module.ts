@@ -6,6 +6,9 @@ import { Profile } from './entities/profile.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
+import { VerificationService } from 'src/email/verification/verification.service';
+import { ConfigService } from '@nestjs/config';
+import EmailService from 'src/email/email.service';
 config();
 
 @Module({
@@ -19,6 +22,11 @@ config();
     }),
   ],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [
+    UserService, 
+    VerificationService, 
+    ConfigService, 
+    EmailService
+  ]
 })
 export class UserModule {}
