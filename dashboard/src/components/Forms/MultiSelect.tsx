@@ -23,11 +23,11 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
       const select = document.getElementById(id) as HTMLSelectElement | null;
       if (select) {
         const newOptions: Option[] = [];
-        for (let i = 0; i < select.options.length; i++) {
+        for (const element of select.options) {
           newOptions.push({
-            value: select.options[i].value,
-            text: select.options[i].innerText,
-            selected: select.options[i].hasAttribute('selected'),
+            value: element.value,
+            text: element.innerText,
+            selected: element.hasAttribute('selected'),
           });
         }
         setOptions(newOptions);
@@ -95,7 +95,7 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
 
   return (
     <div className="relative z-50">
-      <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+      <label htmlFor={id} className="mb-3 block text-sm font-medium text-black dark:text-white">
         Multiselect Dropdown
       </label>
       <div>
@@ -122,13 +122,9 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
                           {options[index].text}
                         </div>
                         <div className="flex flex-auto flex-row-reverse">
-                          <div
-                            onClick={() => remove(index)}
-                            className="cursor-pointer pl-2 hover:text-danger"
-                          >
+                          <div className="cursor-pointer pl-2 hover:text-danger" onClick={() => remove(index)}>
                             <svg
                               className="fill-current"
-                              role="button"
                               width="12"
                               height="12"
                               viewBox="0 0 12 12"
