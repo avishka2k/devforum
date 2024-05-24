@@ -18,15 +18,21 @@ import { ProfileDto } from './dtos/profile.dto';
 import { Profile } from './entities/profile.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { VerificationService } from 'src/email/verification/verification.service';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private readonly emailConfirmationService: VerificationService
+  ) {}
 
   @Post('register')
-  createUser(@Body() regDto: RegisterDto) {
-    return this.userService.register(regDto);
+  async createUser(@Body() regDto: RegisterDto) {
+    const user = await this.userService.register(regDto);
+    await this.emailConfirmationService.sendVerificationLink(regDto.email);
+    return user;
   }
 
   @HttpCode(HttpStatus.OK)

@@ -46,7 +46,18 @@ export class UserService {
         newProfile.user = newUser;
         delete newUser.password;
         await this.profileRepository.save(newProfile);
-        return {user: newUser};
+        return { message: 'User registered successfully!' };
+    }
+
+    async markEmailAsConfirmed(email: string) {
+        return this.userRepository.update({ email }, {
+          isEmailConfirmed: true
+        });
+    }
+
+    async getByEmail(email: string) {
+        const user = await this.userRepository.findOne({ where: {email: email}})
+        return user;
     }
 
     async signIn(data: LoginDto): Promise<{ access_token: string }> {
