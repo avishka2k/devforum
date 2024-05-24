@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 
  
@@ -8,7 +7,6 @@ import { UserService } from 'src/user/user.service';
 export class ConfirmationService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly usersService: UserService,
   ) {}
  
@@ -23,7 +21,7 @@ export class ConfirmationService {
   public async decodeConfirmationToken(token: string) {
     try {
       const payload = await this.jwtService.verify(token, {
-        secret: this.configService.get('JWT_SECRET'),
+        secret: process.env.JWT_SECRET,
       });
  
       if (typeof payload === 'object' && 'email' in payload) {

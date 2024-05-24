@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
 import { VerificationService } from 'src/email/verification/verification.service';
-import { ConfigService } from '@nestjs/config';
 import EmailService from 'src/email/email.service';
 config();
 
@@ -18,14 +17,13 @@ config();
     JwtModule.register({
         global: true,
         secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '30d' },
+        signOptions: { expiresIn: process.env.JWT_EXPIRATION_TIME },
     }),
   ],
   controllers: [UserController],
   providers: [
     UserService, 
     VerificationService, 
-    ConfigService, 
     EmailService
   ]
 })
