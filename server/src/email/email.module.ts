@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { EmailController } from './email.controller';
 import  EmailService  from './email.service';
 import { VerificationModule } from './verification/verification.module';
-import { ConfigModule } from '@nestjs/config';
 import { ConfirmationModule } from './confirmation/confirmation.module';
 
 @Module({
@@ -11,7 +10,6 @@ import { ConfirmationModule } from './confirmation/confirmation.module';
   exports: [EmailService],
   imports: [
     VerificationModule, 
-    ConfigModule, 
     ConfirmationModule
   ]
 })
