@@ -93,6 +93,13 @@ export class UserService {
         return user;
     }
 
+    async getProfile(id: number): Promise<Profile> {
+        const profile = await this.profileRepository.findOne({
+            where: { id },
+        });
+        return profile;
+    }
+
     async updateProfile(userId: number, profileData: Partial<Profile>): Promise<Profile> {
         const user = await this.userRepository.findOne({
             where: { id: userId },

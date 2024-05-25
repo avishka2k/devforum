@@ -48,6 +48,12 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Get(':id/profile')
+  async getUserProfile(@Param('id') id: number): Promise<Profile> {
+    return this.userService.getProfile(id);
+  }
+
+  @UseGuards(AuthGuard)
   @Put(':id/profile')
   async updateUserProfile(
     @Param('id') id: number,
