@@ -18,6 +18,9 @@ export class BlogPost {
   @Column({ type: 'text' })
   content: string;
 
+  @Column({ type: 'varchar'})
+  image: string;
+
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
