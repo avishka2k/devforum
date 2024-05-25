@@ -21,8 +21,7 @@ export class ConfirmationController {
      @Get('confirm')
      async confirmGet(@Query('token') token: string, @Res() res: Response) {
           const email = await this.emailConfirmationService.decodeConfirmationToken(token);
-          await this.emailConfirmationService.confirmEmail(email);
-          // return { message: 'Email successfully verified' };
+          await this.emailConfirmationService.confirmEmail(email);    
           res.redirect('/confirmation/success');
      }
 

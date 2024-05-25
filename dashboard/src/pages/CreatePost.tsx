@@ -2,6 +2,7 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import MultiSelect from '../components/Forms/MultiSelect';
 import DatePickerOne from '../components/Forms/DatePicker/DatePickerOne';
+import EditorJs from '../components/Editor';
 
 const CreatePost = () => {
   return (
@@ -26,14 +27,13 @@ const CreatePost = () => {
                   <label className="mb-2.5 block text-black dark:text-white">
                     Content
                   </label>
-                  <textarea
+                  {/* <textarea
                     rows={6}
                     placeholder="Type your content"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  ></textarea>
-                </div>
-
-                
+                  ></textarea> */}
+                  <EditorJs />
+                </div>            
               </div>
             </form>
           </div>
