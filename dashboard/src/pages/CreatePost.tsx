@@ -8,10 +8,10 @@ const CreatePost = () => {
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Create Post" />
+      <form action="">
       <div className="grid grid-cols-5 gap-10 sm:grid-cols-10">
         <div className="flex flex-col col-span-7 gap-9">
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <form action="#">
               <div className="p-6.5">
                 <div className="mb-4.5">
                   <label className="mb-2.5 block text-black dark:text-white">
@@ -19,6 +19,7 @@ const CreatePost = () => {
                   </label>
                   <input
                     type="text"
+                    name="title"
                     placeholder="Add your title"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
@@ -32,10 +33,9 @@ const CreatePost = () => {
                     placeholder="Type your content"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea> */}
-                  <EditorJs />
+                  <EditorJs/>
                 </div>            
-              </div>
-            </form>
+              </div>          
           </div>
         </div>
 
@@ -53,6 +53,7 @@ const CreatePost = () => {
                     <input
                       type="file"
                       accept="image/*"
+                      name="file"
                       className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
@@ -112,7 +113,9 @@ const CreatePost = () => {
             </div>
           </div>
         </div>
+        
       </div>
+      </form>
     </DefaultLayout>
   );
 };

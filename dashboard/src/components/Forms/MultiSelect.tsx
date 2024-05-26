@@ -15,6 +15,7 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [show, setShow] = useState(false);
+  const [search, setSearch] = useState('');
   const dropdownRef = useRef<any>(null);
   const trigger = useRef<any>(null);
 
@@ -37,61 +38,63 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
     loadOptions();
   }, [id]);
 
-   const open = () => {
-     setShow(true);
-   };
+  const open = () => {
+    setShow(true);
+  };
 
-   const isOpen = () => {
-     return show === true;
-   };
+  const isOpen = () => {
+    return show === true;
+  };
 
- const select = (index: number, event: React.MouseEvent) => {
-   const newOptions = [...options];
+  const select = (index: number) => {
+    const newOptions = [...options];
+    const option = newOptions[index];
 
-   if (!newOptions[index].selected) {
-     newOptions[index].selected = true;
-     newOptions[index].element = event.currentTarget as HTMLElement;
-     setSelected([...selected, index]);
-   } else {
-     const selectedIndex = selected.indexOf(index);
-     if (selectedIndex !== -1) {
-       newOptions[index].selected = false;
-       setSelected(selected.filter((i) => i !== index));
-     }
-   }
+    if (option.selected) {
+      option.selected = false;
+      setSelected((prevSelected) => prevSelected.filter((i) => i !== index));
+    } else {
+      option.selected = true;
+      setSelected((prevSelected) => [...prevSelected, index]);
+    }
 
-   setOptions(newOptions);
- };
+    setOptions(newOptions);
+  };
 
   const remove = (index: number) => {
     const newOptions = [...options];
-    const selectedIndex = selected.indexOf(index);
-
-    if (selectedIndex !== -1) {
-      newOptions[index].selected = false;
-      setSelected(selected.filter((i) => i !== index));
-      setOptions(newOptions);
-    }
+    newOptions[index].selected = false;
+    setSelected((prevSelected) => prevSelected.filter((i) => i !== index));
+    setOptions(newOptions);
   };
 
   const selectedValues = () => {
-    return selected.map((option) => options[option].value);
+    return selected.map((index) => options[index].value);
   };
 
-    useEffect(() => {
-      const clickHandler = ({ target }: MouseEvent) => {
-        if (!dropdownRef.current) return;
-        if (
-          !show ||
-          dropdownRef.current.contains(target) ||
-          trigger.current.contains(target)
-        )
-          return;
-        setShow(false);
-      };
-      document.addEventListener('click', clickHandler);
-      return () => document.removeEventListener('click', clickHandler);
-    });
+  useEffect(() => {
+    const clickHandler = ({ target }: MouseEvent) => {
+      if (!dropdownRef.current) return;
+      if (
+        !show ||
+        dropdownRef.current.contains(target) ||
+        trigger.current.contains(target)
+      )
+        return;
+      setShow(false);
+    };
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
+  });
+
+  const filteredOptions = options.filter((option) =>
+    option.text.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const getOptionIndex = (filteredIndex: number) => {
+    const optionText = filteredOptions[filteredIndex].text;
+    return options.findIndex((option) => option.text === optionText);
+  };
 
   return (
     <div className="relative z-50">
@@ -188,32 +191,40 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
                   onBlur={() => setShow(false)}
                 >
                   <div className="flex w-full flex-col">
-                    {options.map((option, index) => (
-                      <div key={index}>
-                        <div
-                          className="w-full cursor-pointer rounded-t border-b border-stroke hover:bg-primary/5 dark:border-form-strokedark"
-                          onClick={(event) => select(index, event)}
-                        >
-                          <div
-                            className={`relative flex w-full items-center border-l-2 border-transparent p-2 pl-2 ${
-                              option.selected ? 'border-primary' : ''
-                            }`}
-                          >
-                            <div className="flex w-full items-center">
-                              <div className="mx-2 leading-6">
-                                {option.text}
-                              </div>
-                            </div>
-                          </div>
+                    <div className="p-2">
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        className="h-full w-full appearance-none bg-transparent p-1 px-2 outline-none"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </div>
+                    {filteredOptions.map((option, index) => (
+                      <div
+                        key={index}
+                        onClick={() => select(getOptionIndex(index))}
+                        className={`cursor-pointer border-b border-stroke px-2 py-2 ${
+                          option.selected ? 'bg-primary text-white' : ''
+                        }`}
+                      >
+                        <div className="flex w-full items-center">
+                          <div className="mx-2 leading-6">{option.text}</div>
                         </div>
                       </div>
                     ))}
+                    {filteredOptions.length === 0 && (
+                      <div className="cursor-pointer border-b border-stroke px-2 py-2 text-gray-500">
+                        No options found
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <input name="values" type="hidden" defaultValue={selectedValues()} />
       </div>
     </div>
   );
