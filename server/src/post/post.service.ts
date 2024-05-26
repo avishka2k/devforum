@@ -5,11 +5,13 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { PosDto } from './dtos/post.dto';
 import * as AWS from 'aws-sdk';
+import { Tag } from './entities/tag.entity';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(BlogPost) private postRepository: Repository<BlogPost>,
+    @InjectRepository(Tag) private tagRepository: Repository<Tag>,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
