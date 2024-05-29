@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { PosDto } from './dtos/post.dto';
 import { BlogPost } from './entities/post.entity';
 import { AuthGuard } from '../auth/auth.guard';
@@ -38,6 +38,7 @@ export class PostController {
   @UseGuards(AuthGuard)
   @Post(':id')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   createPost(
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,

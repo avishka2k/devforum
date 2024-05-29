@@ -5,7 +5,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Tag } from './tag.entity';
 
 @Entity({ name: 'posts' })
 export class BlogPost {
@@ -30,4 +33,8 @@ export class BlogPost {
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn()
   user: User;
+
+  @ManyToMany(() => Tag, tag => tag.posts)
+  @JoinTable({ name: 'posts_tags'})
+  tags: Tag[];
 }

@@ -5,11 +5,13 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { PosDto } from './dtos/post.dto';
 import * as AWS from 'aws-sdk';
+import { Tag } from './entities/tag.entity';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(BlogPost) private postRepository: Repository<BlogPost>,
+    @InjectRepository(Tag) private tagRepository: Repository<Tag>,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
@@ -41,11 +43,18 @@ export class PostService {
 
   async createPost(userId: number, postDto: PosDto, file: Express.Multer.File) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
+    const tags = await Promise.all(
+      postDto.tags.map(
+        (name) =>
+          this.tagRepository.findOne({ where: { name } }) ||
+          this.tagRepository.save({ name }),
+      ),
+    );
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     const nameFormat = Date.now() + '_' + file.originalname;
     const res = await this.uploadFile(file, nameFormat);
     const part = res.Location.split('/');
@@ -56,11 +65,12 @@ export class PostService {
       user,
       image: imagename,
       created_at: new Date(),
+      tags,
     });
     post.created_at = new Date();
     await this.postRepository.save(post);
-    
-    return { message: 'Post created successfully'};
+
+    return { message: 'Post created successfully' };
   }
 
   async updatePost(id: number, postDto: PosDto): Promise<BlogPost> {
@@ -70,14 +80,16 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
     post.updated_at = new Date();
-    await this.postRepository.update({ id }, postDto);
+    await this.postRepository.update(
+      { id },
+      { ...postDto, tags: postDto.tags.map((name) => ({ name })) },
+    );
 
     delete post.user.password;
     return post;
   }
 
   async uploadFile(file: Express.Multer.File, filename: string) {
-    
     const uploadResult = await this.s3
       .upload({
         Bucket: process.env.DO_SPACES_BUCKET,
@@ -89,5 +101,4 @@ export class PostService {
 
     return uploadResult;
   }
-  
 }

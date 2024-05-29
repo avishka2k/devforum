@@ -9,9 +9,10 @@ interface Option {
 
 interface DropdownProps {
   id: string;
+  onChange: (selected: string[]) => void;
 }
 
-const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
+const MultiSelect: React.FC<DropdownProps> = ({ id, onChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [show, setShow] = useState(false);
@@ -52,10 +53,18 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
 
     if (option.selected) {
       option.selected = false;
-      setSelected((prevSelected) => prevSelected.filter((i) => i !== index));
+      setSelected((prevSelected) => {
+        const newSelected = prevSelected.filter((i) => i !== index);
+        onChange(newSelected.map(i => options[i].value)); // Call onChange with new selected values
+        return newSelected;
+      });
     } else {
       option.selected = true;
-      setSelected((prevSelected) => [...prevSelected, index]);
+      setSelected((prevSelected) => {
+        const newSelected = [...prevSelected, index];
+        onChange(newSelected.map(i => options[i].value)); // Call onChange with new selected values
+        return newSelected;
+      });
     }
 
     setOptions(newOptions);
@@ -64,7 +73,11 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
   const remove = (index: number) => {
     const newOptions = [...options];
     newOptions[index].selected = false;
-    setSelected((prevSelected) => prevSelected.filter((i) => i !== index));
+    setSelected((prevSelected) => {
+      const newSelected = prevSelected.filter((i) => i !== index);
+      onChange(newSelected.map(i => options[i].value)); // Call onChange with new selected values
+      return newSelected;
+    });
     setOptions(newOptions);
   };
 
@@ -103,8 +116,8 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
       </label>
       <div>
         <select className="hidden" id={id}>
-          <option value="1">Option 2</option>
-          <option value="2">Option 3</option>
+          <option value="test">Option 2</option>
+          <option value="name">Option 3</option>
           <option value="3">Option 4</option>
           <option value="4">Option 5</option>
         </select>
