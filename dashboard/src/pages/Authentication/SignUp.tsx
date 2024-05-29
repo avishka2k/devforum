@@ -4,7 +4,6 @@ import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import axios from 'axios';
 
-
 interface RegisterDto {
   email: string;
   username: string;
@@ -13,7 +12,6 @@ interface RegisterDto {
 }
 
 const SignUp: React.FC = () => {
-
   const [formData, setFormData] = useState<RegisterDto>({
     email: '',
     username: '',
@@ -31,7 +29,6 @@ const SignUp: React.FC = () => {
     });
   };
 
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMessage('');
@@ -39,11 +36,17 @@ const SignUp: React.FC = () => {
 
     setTimeout(async () => {
       try {
-        const response = await axios.post('http://localhost:3000/user/register', formData);
+        const response = await axios.post(
+          `${import.meta.env.API_ENDPOINT}/user/register`,
+          formData,
+        );
         setMessage(response.data.message);
       } catch (error: any) {
         if (error.response) {
-          setMessage(error.response.data.message || 'An error occurred. Please try again.');
+          setMessage(
+            error.response.data.message ||
+              'An error occurred. Please try again.',
+          );
           console.log(error.response.data.message);
         } else if (error.request) {
           setMessage('No response received from the server. Please try again.');
@@ -53,10 +56,8 @@ const SignUp: React.FC = () => {
       } finally {
         setLoading(false);
       }
-      
     }, 1000);
   };
-
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -204,7 +205,7 @@ const SignUp: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-            {message && <p className="error">{message}</p>}
+              {message && <p className="error">{message}</p>}
               <div className="mb-4">
                 <label className="mb-2.5 block font-medium text-black dark:text-white">
                   Name
@@ -212,8 +213,8 @@ const SignUp: React.FC = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    name="fullname" 
-                    value={formData.fullname} 
+                    name="fullname"
+                    value={formData.fullname}
                     onChange={handleChange}
                     placeholder="Enter your full name"
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -252,8 +253,8 @@ const SignUp: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Enter your username"
-                    name="username" 
-                    value={formData.username} 
+                    name="username"
+                    value={formData.username}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     required
@@ -291,8 +292,8 @@ const SignUp: React.FC = () => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    name="email" 
-                    value={formData.email} 
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     required
@@ -326,8 +327,8 @@ const SignUp: React.FC = () => {
                   <input
                     type="password"
                     placeholder="Enter your password"
-                    name="password" 
-                    value={formData.password} 
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     required

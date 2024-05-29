@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import axios from 'axios';
-import { jwtDecode } from "jwt-decode";
-
+import { jwtDecode } from 'jwt-decode';
 
 interface LoginDto {
   username: string;
@@ -12,7 +11,6 @@ interface LoginDto {
 }
 
 const SignIn: React.FC = () => {
-
   const navigate = useNavigate();
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,33 +34,42 @@ const SignIn: React.FC = () => {
 
     setTimeout(async () => {
       try {
-        const response = await axios.post('http://localhost:3000/user/login', formData);
+        const response = await axios.post(
+          `${import.meta.env.API_ENDPOINT}/user/login`,
+          formData,
+        );
 
-        if (response.data?.access_token){
+        if (response.data?.access_token) {
           localStorage.setItem('access_token', response.data.access_token);
 
           const decodedToken = jwtDecode(response.data.access_token);
 
-          const userProfile = await axios.get(`http://localhost:3000/user/${decodedToken.sub}/profile`, {
-            headers: { Authorization: `Bearer ${response.data.access_token}` }
-          });
+          const userProfile = await axios.get(
+            `${import.meta.env.API_ENDPOINT}/user/${decodedToken.sub}/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${response.data.access_token}`,
+              },
+            },
+          );
           if (userProfile.data) {
             // Save the user profile to local storage or state management
-            localStorage.setItem('user_profile', JSON.stringify(userProfile.data));
+            localStorage.setItem(
+              'user_profile',
+              JSON.stringify(userProfile.data),
+            );
           }
           setMessage('Sign in successful! Redirecting to dashboard...');
-          
+
           setTimeout(() => {
-            navigate('/'); 
+            navigate('/');
           }, 1000);
         }
-       
       } catch (error: any) {
         setMessage(error.response.data.message);
       } finally {
         setLoading(false);
       }
-      
     }, 1000);
   };
 
@@ -223,7 +230,7 @@ const SignIn: React.FC = () => {
                   <input
                     type="username"
                     name="username"
-                    value={formData.username} 
+                    value={formData.username}
                     onChange={handleChange}
                     placeholder="Enter your username"
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -258,7 +265,7 @@ const SignIn: React.FC = () => {
                   <input
                     type="password"
                     name="password"
-                    value={formData.password} 
+                    value={formData.password}
                     onChange={handleChange}
                     placeholder="6+ Characters, 1 Capital letter"
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

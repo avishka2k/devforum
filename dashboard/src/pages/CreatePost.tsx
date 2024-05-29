@@ -3,15 +3,66 @@ import DefaultLayout from '../layout/DefaultLayout';
 import MultiSelect from '../components/Forms/MultiSelect';
 import DatePickerOne from '../components/Forms/DatePicker/DatePickerOne';
 import EditorJs from '../components/Editor';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import axios from 'axios';
+import TokenUser from './Authentication/TokenUser';
 
-const CreatePost = () => {
+const CreatePost: React.FC = () => {
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [file, setFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleTagsChange = (selectedTags: string[]) => {
+    setTags(selectedTags);
+  };
+
+  const handleContentChange = (data: any) => {
+    setContent(data);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    tags.forEach((tag) => formData.append('tags[]', tag));
+    if (file) {
+      formData.append('file', file);
+    }
+
+    const token = TokenUser();
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.API_ENDPOINT}/post/${token?.userId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token?.access_token}`,
+          },
+        },
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error submitting the form:', error);
+    }
+  };
+
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Create Post" />
-      <form action="">
-      <div className="grid grid-cols-5 gap-10 sm:grid-cols-10">
-        <div className="flex flex-col col-span-7 gap-9">
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-5 gap-10 sm:grid-cols-10">
+          <div className="flex flex-col col-span-7 gap-9">
+            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="p-6.5">
                 <div className="mb-4.5">
                   <label className="mb-2.5 block text-black dark:text-white">
@@ -20,6 +71,8 @@ const CreatePost = () => {
                   <input
                     type="text"
                     name="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     placeholder="Add your title"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
@@ -33,20 +86,20 @@ const CreatePost = () => {
                     placeholder="Type your content"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea> */}
-                  <EditorJs/>
-                </div>            
-              </div>          
+                  <EditorJs onChange={handleContentChange} />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col col-span-3 gap-9">
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Cover Photo
-                </label>
-                <div
+          <div className="flex flex-col col-span-3 gap-9">
+            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+              <div className="flex flex-col gap-5.5 p-6.5">
+                <div>
+                  <label className="mb-3 block text-black dark:text-white">
+                    Cover Photo
+                  </label>
+                  <div
                     id="FileUpload"
                     className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
                   >
@@ -54,6 +107,7 @@ const CreatePost = () => {
                       type="file"
                       accept="image/*"
                       name="file"
+                      onChange={handleFileChange}
                       className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
@@ -93,28 +147,30 @@ const CreatePost = () => {
                       <p>(max, 800 X 800px)</p>
                     </div>
                   </div>
-              </div>
+                </div>
 
-              <div>
-              <MultiSelect id="multiSelect" />
-              </div>
-              <div className="">
-                <DatePickerOne />
-              </div>
-              <div className="flex flex-row gap-5 mt-4">
-                {/* <button className="inline-flex items-center gap-3 rounded-md bg-primary px-5 py-3 text-white hover:bg-opacity-90"><span className="animate-spin"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="path-1-inside-1_1881_16183" fill="white"><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z"></path></mask><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z" stroke="white" stroke-width="14" mask="url(#path-1-inside-1_1881_16183)"></path></svg></span>Loading...</button> */}
-                <button className="flex w-full justify-center rounded border border-primary p-3 font-medium text-primary hover:bg-opacity-90">
-                  Save As Draft
-                </button>
-                <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Publish
-                </button>
+                <div>
+                  <MultiSelect id="multiSelect" onChange={handleTagsChange} />
+                </div>
+                <div className="">
+                  <DatePickerOne />
+                </div>
+                <div className="flex flex-row gap-5 mt-4">
+                  {/* <button className="inline-flex items-center gap-3 rounded-md bg-primary px-5 py-3 text-white hover:bg-opacity-90"><span className="animate-spin"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="path-1-inside-1_1881_16183" fill="white"><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z"></path></mask><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z" stroke="white" stroke-width="14" mask="url(#path-1-inside-1_1881_16183)"></path></svg></span>Loading...</button> */}
+                  <button className="flex w-full justify-center rounded border border-primary p-3 font-medium text-primary hover:bg-opacity-90">
+                    Save As Draft
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+                  >
+                    Publish
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        
-      </div>
       </form>
     </DefaultLayout>
   );

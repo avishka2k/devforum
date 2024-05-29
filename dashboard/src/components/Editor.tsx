@@ -1,14 +1,19 @@
 import { useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
-export default function EditorJs() {
+interface EditorJsComponentProps {
+  onChange: (data: any) => void;
+}
+
+const EditorJs: React.FC<EditorJsComponentProps> = ({ onChange }) => {
 const editorRef = useRef<any>(null);
 
   return (
       <Editor
-        apiKey='1l4xbaqori3gtykgzdbrzkjsuzcmpu722j9xfd7nzdcrd8ok'
+        apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
         onInit={(_evt, editor) => editorRef.current = editor}
         initialValue="<p>Type your content</p>"
+        
         init={{
           height: 500,
           menu: {
@@ -31,8 +36,15 @@ const editorRef = useRef<any>(null);
             'bold italic forecolor backcolor | alignleft aligncenter ' +
             'alignright alignjustify | bullist numlist outdent indent | ' +
             'removeformat',
-          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          setup: (editor) => {
+            editor.on('change', () => {
+              onChange(editor.getContent());
+            });
+          }
         }}
       />
   );
 }
+
+export default EditorJs;

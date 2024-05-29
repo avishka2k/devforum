@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BlogPost } from './post.entity';
 
-@Entity({ name: 'tags' })
+@Entity()
 export class Tag {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
@@ -9,6 +9,6 @@ export class Tag {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-//   @ManyToMany(() => BlogPost, (post) => post.tags)
-//   posts: BlogPost[];
+  @ManyToMany(() => BlogPost, (post) => post.tags)
+  posts: BlogPost[];
 }
