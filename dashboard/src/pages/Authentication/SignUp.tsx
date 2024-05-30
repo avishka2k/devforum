@@ -37,7 +37,7 @@ const SignUp: React.FC = () => {
     setTimeout(async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.API_ENDPOINT}/user/register`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/register`,
           formData,
         );
         setMessage(response.data.message);

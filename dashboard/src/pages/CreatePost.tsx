@@ -41,7 +41,7 @@ const CreatePost: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.API_ENDPOINT}/post/${token?.userId}`,
+        `${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}`,
         formData,
         {
           headers: {

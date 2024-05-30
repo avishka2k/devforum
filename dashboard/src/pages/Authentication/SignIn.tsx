@@ -35,7 +35,7 @@ const SignIn: React.FC = () => {
     setTimeout(async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.API_ENDPOINT}/user/login`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/login`,
           formData,
         );
 
@@ -45,7 +45,9 @@ const SignIn: React.FC = () => {
           const decodedToken = jwtDecode(response.data.access_token);
 
           const userProfile = await axios.get(
-            `${import.meta.env.API_ENDPOINT}/user/${decodedToken.sub}/profile`,
+            `${import.meta.env.VITE_API_ENDPOINT}/user/${
+              decodedToken.sub
+            }/profile`,
             {
               headers: {
                 Authorization: `Bearer ${response.data.access_token}`,
