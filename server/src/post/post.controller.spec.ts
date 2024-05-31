@@ -6,6 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BlogPost } from './entities/post.entity';
+import { Tag } from './entities/tag.entity';
 
 describe('PostController', () => {
   let controller: PostController;
@@ -22,6 +23,10 @@ describe('PostController', () => {
         },
         {
           provide: getRepositoryToken(BlogPost),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(Tag),
           useClass: Repository,
         },
       ],
