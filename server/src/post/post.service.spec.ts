@@ -4,6 +4,7 @@ import { User } from '../user/entities/user.entity';
 import { BlogPost } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Tag } from './entities/tag.entity';
 
 describe('PostService', () => {
   let service: PostService;
@@ -18,6 +19,10 @@ describe('PostService', () => {
         },
         {
           provide: getRepositoryToken(BlogPost),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(Tag),
           useClass: Repository,
         },
       ],
