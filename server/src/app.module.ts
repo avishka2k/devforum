@@ -21,8 +21,8 @@ config();
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       ssl: {
-          rejectUnauthorized: true,
-        },
+          rejectUnauthorized: false,
+      },
     }),
     UserModule,
     PostModule,
