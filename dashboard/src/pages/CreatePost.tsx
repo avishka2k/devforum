@@ -12,6 +12,8 @@ const CreatePost: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -33,6 +35,8 @@ const CreatePost: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setMessage('');
+    setLoading(true);
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
@@ -57,6 +61,9 @@ const CreatePost: React.FC = () => {
       console.log(response.data);
     } catch (error) {
       console.error('Error submitting the form:', error);
+      setMessage('An error occurred while creating the post');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,6 +86,7 @@ const CreatePost: React.FC = () => {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Add your title"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    required
                   />
                 </div>
                 <div className="mb-6">
@@ -99,6 +107,7 @@ const CreatePost: React.FC = () => {
           <div className="flex flex-col col-span-3 gap-9">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="flex flex-col gap-5.5 p-6.5">
+                {message && <p className="error">{message}</p>}
                 <div>
                   <label className="mb-3 block text-black dark:text-white">
                     Cover Photo
@@ -201,7 +210,7 @@ const CreatePost: React.FC = () => {
                     type="submit"
                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                   >
-                    Publish
+                    {loading ? 'Creating...' : 'Publish'}
                   </button>
                 </div>
               </div>
