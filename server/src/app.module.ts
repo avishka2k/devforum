@@ -14,12 +14,15 @@ config();
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.MYSQL_HOST,
-      port: 3306,
+      port: parseInt(process.env.MYSQL_PORT),
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: 'devforum_db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      ssl: {
+          rejectUnauthorized: true,
+        },
     }),
     UserModule,
     PostModule,
