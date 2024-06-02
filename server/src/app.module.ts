@@ -20,9 +20,9 @@ config();
       database: 'devforum_db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      ssl: {
-          rejectUnauthorized: false,
-      },
+      // ssl: {
+      //     rejectUnauthorized: false,
+      // },
     }),
     UserModule,
     PostModule,

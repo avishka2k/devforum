@@ -6,6 +6,7 @@ import EditorJs from '../components/Editor';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import axios from 'axios';
 import TokenUser from './Authentication/TokenUser';
+import Notification from '../components/Notification';
 
 const CreatePost: React.FC = () => {
   const [title, setTitle] = useState<string>('');
@@ -13,7 +14,6 @@ const CreatePost: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -35,7 +35,6 @@ const CreatePost: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage('');
     setLoading(true);
     const formData = new FormData();
     formData.append('title', title);
@@ -59,9 +58,10 @@ const CreatePost: React.FC = () => {
         },
       );
       console.log(response.data);
+      Notification({ message: 'Post created successfully', type: 'success'});
     } catch (error) {
       console.error('Error submitting the form:', error);
-      setMessage('An error occurred while creating the post');
+      Notification({ message: 'An error occurred while creating the post', type: 'error'});
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,6 @@ const CreatePost: React.FC = () => {
           <div className="flex flex-col col-span-3 gap-9">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="flex flex-col gap-5.5 p-6.5">
-                {message && <p className="error">{message}</p>}
                 <div>
                   <label className="mb-3 block text-black dark:text-white">
                     Cover Photo

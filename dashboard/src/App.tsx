@@ -17,6 +17,7 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import CreatePost from './pages/CreatePost';
 import PrivateRoutes from './pages/ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,6 +34,8 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
+    <>
+    <Toaster position="top-right" reverseOrder={false} />
     <Routes>
        <Route element={<PrivateRoutes />}>
         <Route
@@ -154,6 +157,7 @@ function App() {
           }
         />
     </Routes>
+    </>
   );
 }
 
