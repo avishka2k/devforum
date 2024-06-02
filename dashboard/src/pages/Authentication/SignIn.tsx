@@ -4,6 +4,7 @@ import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import Notification from '../../components/Notification';
 
 interface LoginDto {
   username: string;
@@ -61,14 +62,13 @@ const SignIn: React.FC = () => {
               JSON.stringify(userProfile.data),
             );
           }
-          setMessage('Sign in successful! Redirecting to dashboard...');
-
+          Notification({message: 'Sign in successful! Redirecting to dashboard...', type: 'success'});
           setTimeout(() => {
             navigate('/');
           }, 1000);
         }
       } catch (error: any) {
-        setMessage(error.response.data.message);
+        Notification({message: error.response.data.message, type: 'error'});
       } finally {
         setLoading(false);
       }

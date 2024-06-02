@@ -42,35 +42,40 @@ export class PostService {
   }
 
   async createPost(userId: number, postDto: PosDto, file: Express.Multer.File) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    const tags = await Promise.all(
-      postDto.tags.map(
-        (name) =>
-          this.tagRepository.findOne({ where: { name } }) ||
-          this.tagRepository.save({ name }),
-      ),
-    );
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      const tags = await Promise.all(
+        postDto.tags.map(
+          (name) =>
+            this.tagRepository.findOne({ where: { name } }) ||
+            this.tagRepository.save({ name }),
+        ),
+      );
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const nameFormat = Date.now() + '_' + file.originalname;
+      const res = await this.uploadFile(file, nameFormat);
+      const part = res.Location.split('/');
+      const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
+
+      const post = this.postRepository.create({
+        ...postDto,
+        user,
+        image: imagename,
+        created_at: new Date(),
+        tags,
+      });
+      post.created_at = new Date();
+      await this.postRepository.save(post);
+
+      return { message: 'Post created successfully' };
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-
-    const nameFormat = Date.now() + '_' + file.originalname;
-    const res = await this.uploadFile(file, nameFormat);
-    const part = res.Location.split('/');
-    const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
-
-    const post = this.postRepository.create({
-      ...postDto,
-      user,
-      image: imagename,
-      created_at: new Date(),
-      tags,
-    });
-    post.created_at = new Date();
-    await this.postRepository.save(post);
-
-    return { message: 'Post created successfully' };
   }
 
   async updatePost(id: number, postDto: PosDto): Promise<BlogPost> {

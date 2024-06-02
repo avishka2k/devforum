@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import axios from 'axios';
+import Notification from '../../components/Notification';
 
 interface RegisterDto {
   email: string;
@@ -19,7 +20,6 @@ const SignUp: React.FC = () => {
     fullname: '',
   });
 
-  const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +31,6 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage('');
     setLoading(true);
 
     setTimeout(async () => {
@@ -40,18 +39,15 @@ const SignUp: React.FC = () => {
           `${import.meta.env.VITE_API_ENDPOINT}/user/register`,
           formData,
         );
-        setMessage(response.data.message);
+        Notification({ message: response.data.message, type: 'success' });
       } catch (error: any) {
         if (error.response) {
-          setMessage(
-            error.response.data.message ||
-              'An error occurred. Please try again.',
-          );
           console.log(error.response.data.message);
+          Notification({message: error.response.data.message || 'An error occurred. Please try again.', type: 'error' });
         } else if (error.request) {
-          setMessage('No response received from the server. Please try again.');
+          Notification({ message: 'No response received from the server. Please try again.', type: 'error' });
         } else {
-          setMessage(`An error occurred: ${error.message}`);
+          Notification({ message: `An error occurred: ${error.message}`, type: 'error' });
         }
       } finally {
         setLoading(false);
@@ -205,7 +201,6 @@ const SignUp: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-              {message && <p className="error">{message}</p>}
               <div className="mb-4">
                 <label className="mb-2.5 block font-medium text-black dark:text-white">
                   Name
