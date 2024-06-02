@@ -19,6 +19,7 @@ import { BlogPost } from './entities/post.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { NextFunction } from 'express';
+import { TagDto } from './dtos/tag.dto';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('post')
@@ -30,9 +31,19 @@ export class PostController {
     return this.postService.findAll();
   }
 
+  @Get('tags')
+  findAllTags() {
+    return this.postService.findAllTags();
+  }
+
   @Get(':id')
   findAllByUser(@Param('id') id: number) {
     return this.postService.findAllByUser(id);
+  }
+
+  @Post('tags')
+  createTag(@Body() tagDto: TagDto) {
+    return this.postService.createTag(tagDto);
   }
 
   @UseGuards(AuthGuard)

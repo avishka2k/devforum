@@ -6,6 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { PosDto } from './dtos/post.dto';
 import * as AWS from 'aws-sdk';
 import { Tag } from './entities/tag.entity';
+import { TagDto } from './dtos/tag.dto';
 
 @Injectable()
 export class PostService {
@@ -105,5 +106,17 @@ export class PostService {
       .promise();
 
     return uploadResult;
+  }
+
+  async findAllTags(): Promise<Tag[]> {
+    return await this.tagRepository.find();
+  }
+
+  async createTag(tagDto: TagDto): Promise<Tag> {
+    const tag = this.tagRepository.create({
+      ...tagDto,
+    })
+
+    return await this.tagRepository.save(tag);
   }
 }

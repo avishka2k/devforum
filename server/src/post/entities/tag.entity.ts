@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BlogPost } from './post.entity';
 
-@Entity()
+@Entity('tags')
 export class Tag {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;

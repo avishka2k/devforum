@@ -18,7 +18,8 @@ import Buttons from './pages/UiElements/Buttons';
 import CreatePost from './pages/CreatePost';
 import PrivateRoutes from './pages/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -34,7 +35,7 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Toaster position="top-right" reverseOrder={false} />
     <Routes>
        <Route element={<PrivateRoutes />}>
@@ -157,7 +158,7 @@ function App() {
           }
         />
     </Routes>
-    </>
+    </LocalizationProvider>
   );
 }
 
