@@ -11,7 +11,7 @@ export class PosDto {
   content: string;
 
   @ApiProperty({ type: [String] })
-  @IsArray({ message: 'Tags must be an array' })
+  @IsNotEmpty({ message: 'Please provide at least one tag' })
   tags: string[];
 
   @ApiProperty({ type: 'string', format: 'binary' })

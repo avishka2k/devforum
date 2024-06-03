@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogPost } from './entities/post.entity';
 import { LessThanOrEqual, Repository } from 'typeorm';
@@ -67,8 +67,10 @@ export class PostService {
   }
 
   async createPost(userId: number, postDto: PosDto, file: Express.Multer.File) {
+    let today = new Date();
     try {
       const user = await this.userRepository.findOne({ where: { id: userId } });
+
       const tags = await Promise.all(
         postDto.tags.map(
           (name) =>
@@ -81,12 +83,16 @@ export class PostService {
         throw new NotFoundException('User not found');
       }
 
+      if (!file || !file.originalname) {
+        throw new BadRequestException('Please upload a cover photo');
+      }
+
+      let publishdate = new Date(postDto.publish_at);
       const nameFormat = Date.now() + '_' + file.originalname;
+      const isPublished = postDto.is_published === 'true';
       const res = await this.uploadFile(file, nameFormat);
       const part = res.Location.split('/');
       const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
-
-      const isPublished = postDto.is_published === 'true';
 
       const post = this.postRepository.create({
         ...postDto,
@@ -98,7 +104,10 @@ export class PostService {
       });
 
       if (isPublished === true) {
-        post.publish_at = new Date(postDto.publish_at);
+        post.publish_at = publishdate;
+        if (publishdate < today) {
+          throw new BadRequestException('Invalid publish date! Plase select a future date.');
+        }   
       } else {
         post.publish_at = new Date();
       }
@@ -107,7 +116,7 @@ export class PostService {
 
       return { message: 'Post created successfully' };
     } catch (error) {
-      console.error(error);
+      console.log(error);
       throw error;
     }
   }

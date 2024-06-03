@@ -12,7 +12,7 @@ import TokenUser from './Authentication/TokenUser';
 import Notification from '../components/Notification';
 import ReactSelect from 'react-select';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface Option {
   value: string;
@@ -105,10 +105,10 @@ const CreatePost: React.FC = () => {
       );
       console.log(response.data);
       Notification({ message: 'Post created successfully', type: 'success' });
-    } catch (error) {
-      console.error('Error submitting the form:', error);
+    } catch (error: any) {
+      console.log('Error submitting the form:', error);
       Notification({
-        message: 'An error occurred while creating the post',
+        message: error.response.data.message || 'An error occurred while creating the post',
         type: 'error',
       });
     } finally {
@@ -292,6 +292,7 @@ const CreatePost: React.FC = () => {
                           setSelectedDateTime(null);
                         }
                       }}
+                      defaultValue={dayjs()}
                     />
                   )}
                 </div>
