@@ -1,18 +1,18 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import EditorJs from '../components/Editor';
-import {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useState,
-} from 'react';
 import axios from 'axios';
 import TokenUser from './Authentication/TokenUser';
 import Notification from '../components/Notification';
 import ReactSelect from 'react-select';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useState,
+} from 'react';
 
 interface Option {
   value: string;
@@ -61,7 +61,7 @@ const CreatePost: React.FC = () => {
   };
 
   const handleTagsChange = (selectedTags: string[]) => {
-    if (selectedTags.length >= 5) {
+    if (selectedTags.length > 5) {
       Notification({
         message: 'You can only select up to 5 tags',
         type: 'error',

@@ -47,13 +47,24 @@ export class PostService {
   });
 
   async findAll(): Promise<BlogPost[]> {
-    return await this.postRepository.find();
+    const posts = await this.postRepository.find({ relations: ['user', 'user.profile', 'tags'] });
+
+    if (!posts || posts.length === 0) {
+      throw new NotFoundException('Posts not found');
+    }
+
+    posts.forEach((p) => {
+      delete p.user.password;
+    });
+
+    return posts;
   }
 
   async findAllByUser(userId: number): Promise<BlogPost[]> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const posts = await this.postRepository.find({
       where: { user: { id: userId } },
+      relations: ['user', 'tags']
     });
 
     if (!user) {
