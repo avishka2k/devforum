@@ -17,4 +17,10 @@ export class PosDto {
   @ApiProperty({ type: 'string', format: 'binary' })
   file: any;
 
+  @ApiProperty({ type: 'string'})
+  is_published: string;
+
+  @ApiProperty({ type: 'date-time'})
+  publish_at: Date;
+
 }

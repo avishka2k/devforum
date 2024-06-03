@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogPost } from './entities/post.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { PosDto } from './dtos/post.dto';
 import * as AWS from 'aws-sdk';
 import { Tag } from './entities/tag.entity';
 import { TagDto } from './dtos/tag.dto';
+import * as cron from 'node-cron';
 
 @Injectable()
 export class PostService {
@@ -14,7 +15,30 @@ export class PostService {
     @InjectRepository(BlogPost) private postRepository: Repository<BlogPost>,
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
     @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+  ) {
+    this.schedulePostPublication();
+  }
+
+  schedulePostPublication() {
+    cron.schedule('* * * * *', () => {
+      this.publishPosts();
+    });
+  }
+
+  async publishPosts() {
+    const now = new Date();
+    const postsToPublish = await this.postRepository.find({
+      where: {
+        publish_at: LessThanOrEqual(now),
+        is_published: false,
+      },
+    });
+
+    for (const post of postsToPublish) {
+      post.is_published = true;
+      await this.postRepository.save(post);
+    }
+  }
 
   private readonly s3 = new AWS.S3({
     endpoint: process.env.DO_SPACES_ENDPOINT,
@@ -62,14 +86,23 @@ export class PostService {
       const part = res.Location.split('/');
       const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
 
+      const isPublished = postDto.is_published === 'true';
+
       const post = this.postRepository.create({
         ...postDto,
         user,
         image: imagename,
         created_at: new Date(),
         tags,
+        is_published: false,
       });
-      post.created_at = new Date();
+
+      if (isPublished === true) {
+        post.publish_at = new Date(postDto.publish_at);
+      } else {
+        post.publish_at = new Date();
+      }
+
       await this.postRepository.save(post);
 
       return { message: 'Post created successfully' };
@@ -88,7 +121,11 @@ export class PostService {
     post.updated_at = new Date();
     await this.postRepository.update(
       { id },
-      { ...postDto, tags: postDto.tags.map((name) => ({ name })) },
+      {
+        ...postDto,
+        tags: postDto.tags.map((name) => ({ name })),
+        is_published: postDto.is_published === 'true',
+      },
     );
 
     delete post.user.password;
@@ -115,7 +152,7 @@ export class PostService {
   async createTag(tagDto: TagDto): Promise<Tag> {
     const tag = this.tagRepository.create({
       ...tagDto,
-    })
+    });
 
     return await this.tagRepository.save(tag);
   }

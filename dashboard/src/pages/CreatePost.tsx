@@ -1,13 +1,18 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import EditorJs from '../components/Editor';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useState,
+} from 'react';
 import axios from 'axios';
 import TokenUser from './Authentication/TokenUser';
 import Notification from '../components/Notification';
 import ReactSelect from 'react-select';
-import { DatePicker } from '@mui/x-date-pickers';
-import { TimePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { Dayjs } from 'dayjs';
 
 interface Option {
   value: string;
@@ -27,6 +32,8 @@ const CreatePost: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(false);
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  let buttonText;
 
   useEffect(() => {
     axios
@@ -74,11 +81,14 @@ const CreatePost: React.FC = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('content', content); 
+    formData.append('content', content);
     tags.forEach((tag) => formData.append('tags[]', tag));
     if (file) {
       formData.append('file', file);
     }
+
+    formData.append('is_published', isChecked.toString());
+    formData.append('publish_at', selectedDateTime?.toISOString() || '');
 
     const token = TokenUser();
 
@@ -105,6 +115,12 @@ const CreatePost: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (isChecked) {
+    buttonText = loading ? 'Scheduling...' : 'Schedule';
+  } else {
+    buttonText = loading ? 'Creating...' : 'Publish';
+  }
 
   return (
     <DefaultLayout>
@@ -267,10 +283,16 @@ const CreatePost: React.FC = () => {
 
                 <div className="">
                   {isChecked && (
-                    <div className="flex flex-row gap-2">
-                      <DatePicker className="w-full" />
-                      <TimePicker className="w-full" />
-                    </div>
+                    <DateTimePicker
+                      className="w-full"
+                      onChange={(value: Dayjs | null) => {
+                        if (value !== null) {
+                          setSelectedDateTime(value.toDate());
+                        } else {
+                          setSelectedDateTime(null);
+                        }
+                      }}
+                    />
                   )}
                 </div>
                 <div className="flex flex-row gap-5 mt-4">
@@ -282,7 +304,7 @@ const CreatePost: React.FC = () => {
                     type="submit"
                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                   >
-                    {loading ? 'Creating...' : 'Publish'}
+                    {buttonText}
                   </button>
                 </div>
               </div>

@@ -10,7 +10,9 @@ import { ConfirmationService } from './confirmation.service';
 import { Response } from 'express';
 import handlebars from "handlebars";
 import * as fs from "fs";
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('email')
 @Controller('confirmation')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ConfirmationController {

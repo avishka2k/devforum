@@ -16,10 +16,11 @@ import { LoginDto } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { ProfileDto } from './dtos/profile.dto';
 import { Profile } from './entities/profile.entity';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { VerificationService } from '../email/verification/verification.service';
 
+@ApiTags('users')
 @ApiBearerAuth('JWT-auth')
 @Controller('user')
 export class UserController {

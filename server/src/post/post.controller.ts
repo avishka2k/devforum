@@ -13,14 +13,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PosDto } from './dtos/post.dto';
 import { BlogPost } from './entities/post.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { NextFunction } from 'express';
 import { TagDto } from './dtos/tag.dto';
 
+@ApiTags('posts')
 @ApiBearerAuth('JWT-auth')
 @Controller('post')
 export class PostController {

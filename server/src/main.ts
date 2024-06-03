@@ -8,7 +8,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('API')
+    .setTitle('DevForum API')
     .setDescription('The API description')
     .setVersion('1.0')
     .addTag('api')
