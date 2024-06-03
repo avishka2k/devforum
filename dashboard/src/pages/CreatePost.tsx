@@ -1,18 +1,18 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import EditorJs from '../components/Editor';
+import axios from 'axios';
+import TokenUser from './Authentication/TokenUser';
+import Notification from '../components/Notification';
+import ReactSelect from 'react-select';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
 import {
   ChangeEvent,
   FormEvent,
   useEffect,
   useState,
 } from 'react';
-import axios from 'axios';
-import TokenUser from './Authentication/TokenUser';
-import Notification from '../components/Notification';
-import ReactSelect from 'react-select';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { Dayjs } from 'dayjs';
 
 interface Option {
   value: string;
@@ -61,7 +61,7 @@ const CreatePost: React.FC = () => {
   };
 
   const handleTagsChange = (selectedTags: string[]) => {
-    if (selectedTags.length >= 5) {
+    if (selectedTags.length > 5) {
       Notification({
         message: 'You can only select up to 5 tags',
         type: 'error',
@@ -105,10 +105,10 @@ const CreatePost: React.FC = () => {
       );
       console.log(response.data);
       Notification({ message: 'Post created successfully', type: 'success' });
-    } catch (error) {
-      console.error('Error submitting the form:', error);
+    } catch (error: any) {
+      console.log('Error submitting the form:', error);
       Notification({
-        message: 'An error occurred while creating the post',
+        message: error.response.data.message || 'An error occurred while creating the post',
         type: 'error',
       });
     } finally {
@@ -292,6 +292,7 @@ const CreatePost: React.FC = () => {
                           setSelectedDateTime(null);
                         }
                       }}
+                      defaultValue={dayjs()}
                     />
                   )}
                 </div>

@@ -3,6 +3,6 @@ import { IsNotEmpty } from "class-validator";
 
 export class TagDto {
   @ApiProperty()
-  @IsNotEmpty({ message: 'Name cannot be empty' })
+  @IsNotEmpty({ message: 'Please provide at least one tag' })
   name: string;
 } 
