@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
 
 interface Option {
@@ -12,9 +13,16 @@ interface DropdownProps {
   onChange: (selected: string[]) => void;
 }
 
-const MultiSelect: React.FC<DropdownProps> = ({ id, onChange }) => {
+interface Tag {
+  id: number;
+  name: string;
+}
+
+const MultiSelects: React.FC<DropdownProps> = ({ id, onChange }) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
   const dropdownRef = useRef<any>(null);
@@ -109,6 +117,13 @@ const MultiSelect: React.FC<DropdownProps> = ({ id, onChange }) => {
     return options.findIndex((option) => option.text === optionText);
   };
 
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_ENDPOINT}/post/tags`).then((response) => {
+      setTags(response.data);
+    });
+  }, []);
+
   return (
     <div className="relative z-50">
       <label htmlFor={id} className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -116,10 +131,11 @@ const MultiSelect: React.FC<DropdownProps> = ({ id, onChange }) => {
       </label>
       <div>
         <select className="hidden" id={id}>
-          <option value="test">Option 2</option>
-          <option value="name">Option 3</option>
-          <option value="3">Option 4</option>
-          <option value="4">Option 5</option>
+        {tags.map((tag) => (
+          <option key={tag.id} value={tag.id}>
+            {tag.name}
+          </option>
+        ))}
         </select>
 
         <div className="flex flex-col items-center">
@@ -243,4 +259,4 @@ const MultiSelect: React.FC<DropdownProps> = ({ id, onChange }) => {
   );
 };
 
-export default MultiSelect;
+export default MultiSelects;

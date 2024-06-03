@@ -13,13 +13,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PosDto } from './dtos/post.dto';
 import { BlogPost } from './entities/post.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { NextFunction } from 'express';
+import { TagDto } from './dtos/tag.dto';
 
+@ApiTags('posts')
 @ApiBearerAuth('JWT-auth')
 @Controller('post')
 export class PostController {
@@ -30,9 +31,19 @@ export class PostController {
     return this.postService.findAll();
   }
 
+  @Get('tags')
+  findAllTags() {
+    return this.postService.findAllTags();
+  }
+
   @Get(':id')
   findAllByUser(@Param('id') id: number) {
     return this.postService.findAllByUser(id);
+  }
+
+  @Post('tags')
+  createTag(@Body() tagDto: TagDto) {
+    return this.postService.createTag(tagDto);
   }
 
   @UseGuards(AuthGuard)

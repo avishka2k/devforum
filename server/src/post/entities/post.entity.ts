@@ -30,6 +30,12 @@ export class BlogPost {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
+  @Column({ type: 'datetime', nullable: true })
+  publish_at: Date;
+
+  @Column({ type: 'boolean', default: false })
+  is_published: boolean;
+
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn()
   user: User;
