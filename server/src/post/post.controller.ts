@@ -37,12 +37,12 @@ export class PostController {
     return this.postService.findAllTags();
   }
 
-  @Get(':userId')
+  @Get(':userId/byuser')
   findAllByUser(@Param('userId') id: number) {
     return this.postService.findAllByUser(id);
   }
 
-  @Get(':postId/post')
+  @Get(':postId/bypost')
   findByPost(@Param('postId') postId: number) {
     return this.postService.findByPost(postId);
   }

@@ -8,11 +8,11 @@ const TableTwo = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const token = TokenUser();
   let views = 0;
-  
+
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}`)
+      .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}/byuser`)
       .then((response) => {
         setpostData(response.data);
       });
