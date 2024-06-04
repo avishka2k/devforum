@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlogPost } from './entities/post.entity';
 import { LessThanOrEqual, Repository } from 'typeorm';
@@ -47,7 +51,9 @@ export class PostService {
   });
 
   async findAll(): Promise<BlogPost[]> {
-    const posts = await this.postRepository.find({ relations: ['user', 'user.profile', 'tags'] });
+    const posts = await this.postRepository.find({
+      relations: ['user', 'user.profile', 'tags'],
+    });
 
     if (!posts || posts.length === 0) {
       throw new NotFoundException('Posts not found');
@@ -64,7 +70,7 @@ export class PostService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const posts = await this.postRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'tags']
+      relations: ['user', 'tags'],
     });
 
     if (!user) {
@@ -75,6 +81,19 @@ export class PostService {
       throw new NotFoundException('Posts not found');
     }
     return posts;
+  }
+
+  async findByPost(postId: number): Promise<BlogPost> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user', 'tags'],
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return post;
   }
 
   async createPost(userId: number, postDto: PosDto, file: Express.Multer.File) {
@@ -116,8 +135,10 @@ export class PostService {
       if (isPublished === true) {
         post.publish_at = publishdate;
         if (publishdate < today) {
-          throw new BadRequestException('Invalid publish date! Plase select a future date.');
-        }   
+          throw new BadRequestException(
+            'Invalid publish date! Plase select a future date.',
+          );
+        }
       } else {
         post.publish_at = new Date();
       }
@@ -131,26 +152,42 @@ export class PostService {
     }
   }
 
-  async updatePost(id: number, postDto: PosDto): Promise<BlogPost> {
-    const post = await this.postRepository.findOne({ where: { id } });
+  async updatePost(postId: number, postDto: PosDto, file: Express.Multer.File) {
+    const post = await this.postRepository.findOne({ where: { id: postId } });
 
     if (!post) {
       throw new NotFoundException('Post not found');
     }
-    post.updated_at = new Date();
-    await this.postRepository.update(
-      { id },
-      {
-        ...postDto,
-        tags: postDto.tags.map((name) => ({ name })),
-        is_published: postDto.is_published === 'true',
-      },
+
+    const tags = await Promise.all(
+      postDto.tags.map(async (name) => {
+        const tag = await this.tagRepository.findOne({ where: { name } });
+        if (tag) {
+          return tag;
+        } else {
+          return this.tagRepository.save({ name });
+        }
+      })
     );
 
-    delete post.user.password;
+    if (file) {
+      const nameFormat = Date.now() + '_' + file.originalname;
+      const res = await this.uploadFile(file, nameFormat);
+      const part = res.Location.split('/');
+      const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
+      post.image = imagename;
+    }
+
+    post.title = postDto.title;
+    post.content = postDto.content;
+    post.tags = tags;
+
+    await this.postRepository.save(post);
+
     return post;
   }
 
+  // This method uploads a file to AWS S3
   async uploadFile(file: Express.Multer.File, filename: string) {
     const uploadResult = await this.s3
       .upload({
@@ -174,5 +211,17 @@ export class PostService {
     });
 
     return await this.tagRepository.save(tag);
+  }
+
+  async deletePost(postId: number) {
+    const post = await this.postRepository.findOne({ where: { id: postId } });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    await this.postRepository.delete(postId);
+
+    return { message: 'Post deleted successfully' };
   }
 }

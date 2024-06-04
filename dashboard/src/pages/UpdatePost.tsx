@@ -9,6 +9,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+
 interface Option {
   value: string;
   label: string;
@@ -19,7 +20,7 @@ interface Tag {
   name: string;
 }
 
-const CreatePost: React.FC = () => {
+const UpdatePost: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
@@ -321,4 +322,4 @@ const CreatePost: React.FC = () => {
   );
 };
 
-export default CreatePost;
+export default UpdatePost;
