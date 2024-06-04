@@ -5,9 +5,10 @@ import DeleteConfirm from '../DeleteConfirm';
 
 const TableTwo = () => {
   const [postData, setpostData] = useState<any>([]);
-  const token = TokenUser();
   const [loading, setLoading] = useState<boolean>(true);
-
+  const token = TokenUser();
+  let views = 0;
+  
   useEffect(() => {
     setLoading(true);
     axios
@@ -17,8 +18,6 @@ const TableTwo = () => {
       });
     setLoading(false);
   }, []);
-
-  let views = 0;
 
   const status = ({ post }: { post: any }) => {
     if (new Date(post.publish_at) > new Date()) {
