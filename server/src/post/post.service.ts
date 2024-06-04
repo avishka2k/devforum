@@ -160,11 +160,14 @@ export class PostService {
     }
 
     const tags = await Promise.all(
-      postDto.tags.map(
-        (name) =>
-          this.tagRepository.findOne({ where: { name } }) ||
-          this.tagRepository.save({ name }),
-      ),
+      postDto.tags.map(async (name) => {
+        const tag = await this.tagRepository.findOne({ where: { name } });
+        if (tag) {
+          return tag;
+        } else {
+          return this.tagRepository.save({ name });
+        }
+      })
     );
 
     if (file) {
