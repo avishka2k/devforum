@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Next,
   Param,
@@ -36,9 +37,14 @@ export class PostController {
     return this.postService.findAllTags();
   }
 
-  @Get(':id')
-  findAllByUser(@Param('id') id: number) {
+  @Get(':userId')
+  findAllByUser(@Param('userId') id: number) {
     return this.postService.findAllByUser(id);
+  }
+
+  @Get(':postId/post')
+  findByPost(@Param('postId') postId: number) {
+    return this.postService.findByPost(postId);
   }
 
   @Post('tags')
@@ -60,10 +66,19 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Put(':postId')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   updatePost(
     @Param('postId') postId: number,
     @Body() postDto: PosDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<BlogPost> {
-    return this.postService.updatePost(postId, postDto);
+    return this.postService.updatePost(postId, postDto, file);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':postId')
+  deletePost(@Param('postId') postId: number) {
+    return this.postService.deletePost(postId);
   }
 }

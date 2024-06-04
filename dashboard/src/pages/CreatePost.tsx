@@ -7,13 +7,8 @@ import Notification from '../components/Notification';
 import ReactSelect from 'react-select';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
-import {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useState,
-} from 'react';
-
+import { useNavigate } from 'react-router-dom';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 interface Option {
   value: string;
   label: string;
@@ -33,6 +28,7 @@ const CreatePost: React.FC = () => {
   const [options, setOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const navigate = useNavigate();
   let buttonText;
 
   useEffect(() => {
@@ -105,15 +101,23 @@ const CreatePost: React.FC = () => {
       );
       console.log(response.data);
       Notification({ message: 'Post created successfully', type: 'success' });
+
+      handleNavigation();
     } catch (error: any) {
       console.log('Error submitting the form:', error);
       Notification({
-        message: error.response.data.message || 'An error occurred while creating the post',
+        message:
+          error.response.data.message ||
+          'An error occurred while creating the post',
         type: 'error',
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNavigation = () => {
+    navigate('/posts');
   };
 
   if (isChecked) {
