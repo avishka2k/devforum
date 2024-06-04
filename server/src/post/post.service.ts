@@ -102,18 +102,17 @@ export class PostService {
       const user = await this.userRepository.findOne({ where: { id: userId } });
 
       const tags = await Promise.all(
-        postDto.tags.map(
-          (name) =>
-            this.tagRepository.findOne({ where: { name } }) ||
-            this.tagRepository.save({ name }),
-        ),
+        postDto.tags.map(async (name) => {
+          const tag = await this.tagRepository.findOne({ where: { name } });
+          if (tag) {
+            return tag;
+          } else {
+            return this.tagRepository.save({ name });
+          }
+        })
       );
 
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      if (!file || !file.originalname) {
+      if (!file?.originalname) {
         throw new BadRequestException('Please upload a cover photo');
       }
 
