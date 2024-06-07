@@ -20,6 +20,7 @@ import PrivateRoutes from './pages/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import UpdatePost from './pages/UpdatePost';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -63,6 +64,15 @@ function App() {
             <>
               <PageTitle title="Create Posts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <CreatePost />
+            </>
+          }
+        />
+        <Route
+          path="/posts/:id/update"
+          element={
+            <>
+              <PageTitle title="Create Posts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <UpdatePost />
             </>
           }
         />

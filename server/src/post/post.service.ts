@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BlogPost } from './entities/post.entity';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
-import { PosDto } from './dtos/post.dto';
+import { PostDto } from './dtos/post.dto';
 import * as AWS from 'aws-sdk';
 import { Tag } from './entities/tag.entity';
 import { TagDto } from './dtos/tag.dto';
@@ -80,6 +80,11 @@ export class PostService {
     if (!posts || posts.length === 0) {
       throw new NotFoundException('Posts not found');
     }
+
+    posts.forEach((p) => {
+      delete p.user.password;
+    });
+
     return posts;
   }
 
@@ -93,10 +98,16 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
+    delete post.user.password;
+
     return post;
   }
 
-  async createPost(userId: number, postDto: PosDto, file: Express.Multer.File) {
+  async createPost(
+    userId: number,
+    postDto: PostDto,
+    file: Express.Multer.File,
+  ) {
     let today = new Date();
     try {
       const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -109,7 +120,7 @@ export class PostService {
           } else {
             return this.tagRepository.save({ name });
           }
-        })
+        }),
       );
 
       if (!file?.originalname) {
@@ -152,39 +163,57 @@ export class PostService {
     }
   }
 
-  async updatePost(postId: number, postDto: PosDto, file: Express.Multer.File) {
-    const post = await this.postRepository.findOne({ where: { id: postId } });
+  async updatePost(postId: number, postDto: PostDto, file: any): Promise<any> {
+    try {
+      const post = await this.postRepository.findOne({ where: { id: postId } });
+      if (!post) {
+        throw new NotFoundException('Post not found');
+      }
 
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
+      const tags = await Promise.all(
+        postDto.tags.map(async (name) => {
+          const tag = await this.tagRepository.findOne({ where: { name } });
+          if (tag) {
+            return tag;
+          } else {
+            return this.tagRepository.save({ name });
+          }
+        }),
+      );
 
-    const tags = await Promise.all(
-      postDto.tags.map(async (name) => {
-        const tag = await this.tagRepository.findOne({ where: { name } });
-        if (tag) {
-          return tag;
-        } else {
-          return this.tagRepository.save({ name });
+      if (file?.originalname) {
+        const nameFormat = Date.now() + '_' + file.originalname;
+        const res = await this.uploadFile(file, nameFormat);
+        const part = res.Location.split('/');
+        const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
+
+        post.image = imagename;
+      }
+
+      let publishdate = new Date(postDto.publish_at);
+      const isPublished = postDto.is_published === 'true';
+      post.tags = tags;
+      post.is_published = false;
+      post.title = postDto.title;
+      post.content = postDto.content;
+      post.updated_at = new Date();
+
+      if (isPublished === true) {
+        if (publishdate < new Date()) {
+          throw new BadRequestException(
+            'Invalid publish date! Please select a future date.',
+          );
         }
-      })
-    );
+        post.publish_at = publishdate;
+      }
 
-    if (file) {
-      const nameFormat = Date.now() + '_' + file.originalname;
-      const res = await this.uploadFile(file, nameFormat);
-      const part = res.Location.split('/');
-      const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_COVERS}/${part[part.length - 1]}`;
-      post.image = imagename;
+      await this.postRepository.save(post);
+
+      return { message: 'Post updated successfully' };
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-
-    post.title = postDto.title;
-    post.content = postDto.content;
-    post.tags = tags;
-
-    await this.postRepository.save(post);
-
-    return post;
   }
 
   // This method uploads a file to AWS S3
@@ -221,7 +250,6 @@ export class PostService {
     }
 
     await this.postRepository.delete(postId);
-
     return { message: 'Post deleted successfully' };
   }
 }

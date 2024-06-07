@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { PosDto } from './dtos/post.dto';
+import { PostDto } from './dtos/post.dto';
 import { BlogPost } from './entities/post.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -34,16 +34,19 @@ export class PostController {
     return this.postService.findAllTags();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':userId/byuser')
   findAllByUser(@Param('userId') id: number) {
     return this.postService.findAllByUser(id);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':postId/bypost')
   findByPost(@Param('postId') postId: number) {
     return this.postService.findByPost(postId);
   }
 
+  @UseGuards(AuthGuard)
   @Post('tags')
   createTag(@Body() tagDto: TagDto) {
     return this.postService.createTag(tagDto);
@@ -56,7 +59,7 @@ export class PostController {
   createPost(
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
-    @Body() postDto: PosDto,
+    @Body() postDto: PostDto,
   ) {
     return this.postService.createPost(id, postDto, file);
   }
@@ -67,8 +70,8 @@ export class PostController {
   @ApiConsumes('multipart/form-data')
   updatePost(
     @Param('postId') postId: number,
-    @Body() postDto: PosDto,
     @UploadedFile() file: Express.Multer.File,
+    @Body() postDto: PostDto,
   ): Promise<BlogPost> {
     return this.postService.updatePost(postId, postDto, file);
   }

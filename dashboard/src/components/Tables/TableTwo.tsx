@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import TokenUser from '../../pages/Authentication/TokenUser';
 import DeleteConfirm from '../DeleteConfirm';
+import { Link } from 'react-router-dom';
 
 const TableTwo = () => {
   const [postData, setpostData] = useState<any>([]);
@@ -12,7 +13,13 @@ const TableTwo = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}/byuser`)
+      .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}/byuser`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token?.access_token}`,
+        },
+      
+      })
       .then((response) => {
         setpostData(response.data);
       });
@@ -136,7 +143,7 @@ const TableTwo = () => {
                 postData={postData}
                 setpostData={setpostData}
               />
-              <button className="hover:text-primary">
+              <Link to={`/posts/${post.id}/update`} className="hover:text-primary">
                 <svg
                   className="fill-current"
                   width="18"
@@ -154,7 +161,7 @@ const TableTwo = () => {
                     fill=""
                   />
                 </svg>
-              </button>
+              </Link>
             </div>
           </div>
         ))
