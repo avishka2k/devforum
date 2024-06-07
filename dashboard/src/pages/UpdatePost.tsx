@@ -2,50 +2,64 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import EditorJs from '../components/Editor';
 import axios from 'axios';
-import TokenUser from './Authentication/TokenUser';
-import Notification from '../components/Notification';
 import ReactSelect from 'react-select';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import TokenUser from './Authentication/TokenUser';
+import Notification from '../components/Notification';
 
-interface Option {
+interface TagOption {
   value: string;
   label: string;
 }
 
-interface Tag {
-  id: string;
-  name: string;
-}
-
-const UpdatePost: React.FC = () => {
+const CreatePost: React.FC = () => {
+  const { id: itemId } = useParams<{ id: string }>();
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [options, setOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const [tags, setTags] = useState<TagOption[]>([]);
+  const [allTags, setAllTags] = useState<TagOption[]>([]);
+  const [coverImage, setCoverImage] = useState<string>('');
   const navigate = useNavigate();
+  const token = TokenUser();
   let buttonText;
 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_ENDPOINT}/post/tags`)
-      .then((response) => {
-        const fetchedTags = response.data.map((tag: Tag) => ({
-          value: tag.id,
-          label: tag.name,
-        }));
-        setOptions(fetchedTags);
-      })
-      .catch((error) => {
-        console.error('Error fetching tags:', error);
-      });
-  }, []);
+      .then((response) =>
+        setAllTags(
+          response.data.map((tag: any) => ({ value: tag.id, label: tag.name })),
+        ),
+      )
+      .catch((error) => console.error(error));
+
+    if (itemId) {
+      axios
+        .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${itemId}/bypost`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token?.access_token}`,
+          },
+        })
+        .then((response) => {
+          const item = response.data;
+          setTitle(item.title);
+          setContent(item.content);
+          setCoverImage(item.image);
+          setTags(
+            item.tags.map((tag: any) => ({ value: tag.id, label: tag.name })),
+          );
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [itemId]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -55,23 +69,18 @@ const UpdatePost: React.FC = () => {
 
   const removeImage = () => {
     setFile(null);
-  };
-
-  const handleTagsChange = (selectedTags: string[]) => {
-    if (selectedTags.length > 5) {
-      Notification({
-        message: 'You can only select up to 5 tags',
-        type: 'error',
-      });
-      return;
-    }
-    setTags(selectedTags);
-    console.log(selectedTags);
+    setCoverImage('');
   };
 
   const handleContentChange = (data: any) => {
     setContent(data);
   };
+
+  if (isChecked) {
+    buttonText = loading ? 'Scheduling...' : 'Schedule';
+  } else {
+    buttonText = loading ? 'Updating...' : 'Update';
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -79,31 +88,32 @@ const UpdatePost: React.FC = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
-    tags.forEach((tag) => formData.append('tags[]', tag));
+    tags.forEach((tag) => formData.append('tags[]', tag.label));
     if (file) {
       formData.append('file', file);
     }
-
-    formData.append('is_published', isChecked.toString());
     formData.append('publish_at', selectedDateTime?.toISOString() || '');
 
-    const token = TokenUser();
-
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token?.access_token}`,
+      if (itemId) {
+        const response = await axios.put(
+          `${import.meta.env.VITE_API_ENDPOINT}/post/${itemId}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token?.access_token}`,
+            },
           },
-        },
-      );
-      console.log(response.data);
-      Notification({ message: 'Post created successfully', type: 'success' });
-
-      handleNavigation();
+        );
+        if (response.status === 200) {
+          Notification({
+            message: 'Post updated successfully',
+            type: 'success',
+          });
+          navigate('/posts');
+        }
+      }
     } catch (error: any) {
       console.log('Error submitting the form:', error);
       Notification({
@@ -116,16 +126,6 @@ const UpdatePost: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const handleNavigation = () => {
-    navigate('/posts');
-  };
-
-  if (isChecked) {
-    buttonText = loading ? 'Scheduling...' : 'Schedule';
-  } else {
-    buttonText = loading ? 'Creating...' : 'Publish';
-  }
 
   return (
     <DefaultLayout>
@@ -158,7 +158,7 @@ const UpdatePost: React.FC = () => {
                     placeholder="Type your content"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea> */}
-                  <EditorJs onChange={handleContentChange} />
+                  <EditorJs value={content} onChange={handleContentChange} />
                 </div>
               </div>
             </div>
@@ -175,10 +175,10 @@ const UpdatePost: React.FC = () => {
                     id="FileUpload"
                     className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
                   >
-                    {file ? (
+                    {file || coverImage ? (
                       <div className="relative">
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={file ? URL.createObjectURL(file) : coverImage}
                           alt="Selected"
                           className="w-full h-full object-cover"
                         />
@@ -258,11 +258,11 @@ const UpdatePost: React.FC = () => {
                     Tags
                   </label>
                   <ReactSelect
-                    id="tagSelector"
-                    options={options}
                     isMulti
-                    onChange={(selectedTags) =>
-                      handleTagsChange(selectedTags.map((tag) => tag.label))
+                    value={tags}
+                    options={allTags}
+                    onChange={(selectedOptions) =>
+                      setTags(selectedOptions as TagOption[])
                     }
                   />
                 </div>
@@ -322,4 +322,4 @@ const UpdatePost: React.FC = () => {
   );
 };
 
-export default UpdatePost;
+export default CreatePost;

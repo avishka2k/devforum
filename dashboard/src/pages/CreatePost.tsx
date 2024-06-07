@@ -65,7 +65,6 @@ const CreatePost: React.FC = () => {
       return;
     }
     setTags(selectedTags);
-    console.log(selectedTags);
   };
 
   const handleContentChange = (data: any) => {
@@ -99,10 +98,10 @@ const CreatePost: React.FC = () => {
           },
         },
       );
-      console.log(response.data);
-      Notification({ message: 'Post created successfully', type: 'success' });
-
-      handleNavigation();
+      if (response.status === 201) {
+        Notification({ message: 'Post created successfully', type: 'success' });
+        navigate('/posts');
+      }
     } catch (error: any) {
       console.log('Error submitting the form:', error);
       Notification({
@@ -114,10 +113,6 @@ const CreatePost: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleNavigation = () => {
-    navigate('/posts');
   };
 
   if (isChecked) {

@@ -42,7 +42,6 @@ const SignUp: React.FC = () => {
         Notification({ message: response.data.message, type: 'success' });
       } catch (error: any) {
         if (error.response) {
-          console.log(error.response.data.message);
           Notification({message: error.response.data.message || 'An error occurred. Please try again.', type: 'error' });
         } else if (error.request) {
           Notification({ message: 'No response received from the server. Please try again.', type: 'error' });

@@ -3,16 +3,17 @@ import { Editor } from '@tinymce/tinymce-react';
 
 interface EditorJsComponentProps {
   onChange: (data: any) => void;
+  value?: string;
 }
 
-const EditorJs: React.FC<EditorJsComponentProps> = ({ onChange }) => {
+const EditorJs: React.FC<EditorJsComponentProps> = ({ onChange, value }) => {
 const editorRef = useRef<any>(null);
 
   return (
       <Editor
         apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
         onInit={(_evt, editor) => editorRef.current = editor}
-        initialValue="<p>Type your content</p>"   
+        initialValue={value || "<p>Type your content</p>"}   
         init={{
           height: 500,
           menubar: false,
