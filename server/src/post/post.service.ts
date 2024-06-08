@@ -182,6 +182,7 @@ export class PostService {
       );
 
       if (file?.originalname) {
+        await this.deleteFile(post);
         const nameFormat = Date.now() + '_' + file.originalname;
         const res = await this.uploadFile(file, nameFormat);
         const part = res.Location.split('/');
@@ -216,20 +217,6 @@ export class PostService {
     }
   }
 
-  // This method uploads a file to AWS S3
-  async uploadFile(file: Express.Multer.File, filename: string) {
-    const uploadResult = await this.s3
-      .upload({
-        Bucket: process.env.DO_SPACES_BUCKET,
-        Key: `${process.env.DO_SPACES_BUCKET_COVERS}/${filename}`,
-        Body: file.buffer,
-        ACL: 'public-read',
-      })
-      .promise();
-
-    return uploadResult;
-  }
-
   async findAllTags(): Promise<Tag[]> {
     return await this.tagRepository.find();
   }
@@ -250,6 +237,38 @@ export class PostService {
     }
 
     await this.postRepository.delete(postId);
+    await this.deleteFile(post);
+
     return { message: 'Post deleted successfully' };
+  }
+
+  // This method uploads a file to AWS S3
+  async uploadFile(file: Express.Multer.File, filename: string) {
+    const uploadResult = await this.s3
+      .upload({
+        Bucket: process.env.DO_SPACES_BUCKET,
+        Key: `${process.env.DO_SPACES_BUCKET_COVERS}/${filename}`,
+        Body: file.buffer,
+        ACL: 'public-read',
+      })
+      .promise();
+
+    return uploadResult;
+  }
+
+  // This method delete a file to AWS S3
+  async deleteFile(post: BlogPost) {
+    const params = {
+      Bucket: process.env.DO_SPACES_BUCKET,
+      Key: `${process.env.DO_SPACES_BUCKET_COVERS}/${post.image.split('/').pop()}`,
+    };
+
+    this.s3.deleteObject(params, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('File deleted successfully');
+      }
+    });
   }
 }
