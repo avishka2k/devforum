@@ -18,6 +18,9 @@ export class Profile {
     avatar: string;
 
     @Column({nullable: true})
+    headline: string;
+
+    @Column({nullable: true})
     bio: string;
 
     @Column({nullable: true})

@@ -6,6 +6,9 @@ export class ProfileDto {
     fullname: string;
 
     @ApiProperty()
+    headline: string;
+
+    @ApiProperty()
     bio: string;
 
     @ApiProperty()

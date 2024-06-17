@@ -39,7 +39,6 @@ const EditorJs: React.FC<EditorJsComponentProps> = ({ onChange, value }) => {
           'importcss',
           'emoticons',
           'codesample',
-          'spellcheckdialog'
         ],
         toolbar:
           'undo redo | revisionhistory | aidialog aishortcuts | blocks fontsizeinput | bold italic strikethrough forecolor backcolor formatpainter removeformat | align numlist bullist | link image emoticons codesample | table media | lineheight  outdent indent | charmap | ltr rtl | spellcheckdialog a11ycheck',
