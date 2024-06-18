@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import UserOne from '../../images/user/user.png';
+import TokenUser from '../../pages/Authentication/TokenUser';
+import axios from 'axios';
+import ProfileIcon from '../ServerData/ProfileIcon';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  const [userData, setUserData] = useState({} as any);
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
 
@@ -35,6 +36,25 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  const getUserData = () => {
+    const token = TokenUser();
+    if (token?.userId) {
+      axios
+        .get(`${import.meta.env.VITE_API_ENDPOINT}/user/${token.userId}`, {
+          headers: {
+            Authorization: `Bearer ${token.access_token}`,
+          },
+        })
+        .then((res) => {
+          setUserData(res.data);
+        });
+    }
+  };
+
   return (
     <div className="relative">
       <Link
@@ -45,13 +65,16 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userData?.profile?.fullname
+              ? userData.profile.fullname.charAt(0).toUpperCase() +
+                userData.profile.fullname.slice(1)
+              : 'User'}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          {/* <span className="block text-xs">UX Designer</span> */}
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <img src="https://devforum-s3.sgp1.cdn.digitaloceanspaces.com/basic/default-user-icon.png" alt="User" />
+        <span className="w-12 rounded-full overflow-auto">
+          <ProfileIcon />
         </span>
 
         <svg

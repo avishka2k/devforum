@@ -21,6 +21,7 @@ import { Toaster } from 'react-hot-toast';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import UpdatePost from './pages/UpdatePost';
+import UpdateProfile from './pages/UpdateProfile';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -82,6 +83,15 @@ function App() {
             <>
               <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/profile/update"
+          element={
+            <>
+              <PageTitle title="Update Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <UpdateProfile />
             </>
           }
         />

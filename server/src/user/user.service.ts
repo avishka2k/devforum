@@ -11,6 +11,7 @@ import { Profile } from './entities/profile.entity';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
+import * as AWS from 'aws-sdk';
 import { LoginDto } from './dtos/login.dto';
 
 @Injectable()
@@ -20,6 +21,12 @@ export class UserService {
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
     private jwtService: JwtService,
   ) {}
+
+  private readonly s3 = new AWS.S3({
+    endpoint: process.env.DO_SPACES_ENDPOINT,
+    accessKeyId: process.env.DO_SPACES_KEY,
+    secretAccessKey: process.env.DO_SPACES_SECRET,
+  });
 
   async register(data: RegisterDto) {
     const userExists = await this.userRepository.findOne({
@@ -109,6 +116,7 @@ export class UserService {
   async updateProfile(
     userId: number,
     profileData: Partial<Profile>,
+    file: Express.Multer.File,
   ): Promise<Profile> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -121,6 +129,15 @@ export class UserService {
 
     const profile = user.profile;
     profile.updated_at = new Date();
+    if (file?.originalname) {
+      await this.deleteFile(profile);
+      const nameFormat = Date.now() + '_' + file.originalname;
+      const res = await this.uploadFile(file, nameFormat);
+      const part = res.Location.split('/');
+      const imagename = `${process.env.DO_SPACES_CDN_ENDPOINT}/${process.env.DO_SPACES_BUCKET_AVATAR}/${part[part.length - 1]}`;
+
+      profile.avatar = imagename;
+    }
     Object.assign(profile, profileData);
     delete user.password;
     await this.profileRepository.save(profile);
@@ -156,5 +173,36 @@ export class UserService {
       (followingUser) => followingUser.id !== unfollowUserId,
     );
     await this.userRepository.save(user);
+  }
+
+  // This method uploads a file to AWS S3
+  async uploadFile(file: Express.Multer.File, filename: string) {
+    const uploadResult = await this.s3
+      .upload({
+        Bucket: process.env.DO_SPACES_BUCKET,
+        Key: `${process.env.DO_SPACES_BUCKET_AVATAR}/${filename}`,
+        Body: file.buffer,
+        ACL: 'public-read',
+      })
+      .promise();
+
+    return uploadResult;
+  }
+
+  // This method delete a file to AWS S3
+  async deleteFile(profile: Profile) {
+    if (profile.avatar) {
+      const params = {
+        Bucket: process.env.DO_SPACES_BUCKET,
+        Key: `${process.env.DO_SPACES_BUCKET_AVATAR}/${profile.avatar.split('/').pop()}`,
+      };
+      this.s3.deleteObject(params, (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+    }
   }
 }

@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dtos/register.dto';
@@ -16,9 +18,10 @@ import { LoginDto } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { ProfileDto } from './dtos/profile.dto';
 import { Profile } from './entities/profile.entity';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { VerificationService } from '../email/verification/verification.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('users')
 @ApiBearerAuth('JWT-auth')
@@ -26,7 +29,7 @@ import { VerificationService } from '../email/verification/verification.service'
 export class UserController {
   constructor(
     private userService: UserService,
-    private readonly emailConfirmationService: VerificationService
+    private readonly emailConfirmationService: VerificationService,
   ) {}
 
   @Post('register')
@@ -55,12 +58,15 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @Put(':id/profile')
   async updateUserProfile(
     @Param('id') id: number,
     @Body() profileDto: ProfileDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<Profile> {
-    return this.userService.updateProfile(id, profileDto);
+    return this.userService.updateProfile(id, profileDto, file);
   }
 
   @UseGuards(AuthGuard)
