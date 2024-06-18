@@ -47,7 +47,7 @@ const Profile = () => {
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
           <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-            <div className="relative drop-shadow-2 w-40 rounded-full overflow-auto">
+            <div className="relative drop-shadow-2 w-40 rounded-full overflow-hidden">
             <ProfileIcon size="40" />
             </div>
           </div>

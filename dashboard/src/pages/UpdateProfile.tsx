@@ -26,14 +26,13 @@ const UpdateProfile: React.FC = () => {
     values[index] = event.target.value;
     setInputs(values);
 
-    // If the modified input is the last one in the array and it's not empty, add a new input field
     if (index === values.length - 1 && event.target.value !== '') {
       setInputs([...values, '']);
     }
   };
 
   const handleRemoveClick = (index: any) => {
-    if (index !== 0) { 
+    if (index !== 0) {
       const values = [...inputs];
       values.splice(index, 1);
       setInputs(values);
@@ -228,12 +227,25 @@ const UpdateProfile: React.FC = () => {
                       Profile Image
                     </label>
                     <div className="flex flex-row gap-2 items-center">
-                    <span className="w-16 rounded-full overflow-auto">
-                    <ProfileIcon size="14" />
-                    </span>
-                    <input accept="image/*" name="file" onChange={handleFileChange} type="file" className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary" />
+                      <span className="w-16 rounded-full overflow-auto">
+                        {file ? (
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="User"
+                            className="h-14"
+                          />
+                        ) : (
+                          <ProfileIcon size="14" />
+                        )}
+                      </span>
+                      <input
+                        accept="image/*"
+                        name="file"
+                        onChange={handleFileChange}
+                        type="file"
+                        className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                      />
                     </div>
-                    
                   </div>
 
                   <div className="mb-5.5">
@@ -241,7 +253,10 @@ const UpdateProfile: React.FC = () => {
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="emailAddress"
                     >
-                      Email Address {userData?.isEmailConfirmed ? '(Verified)' : '(Not Verified)'}
+                      Email Address{' '}
+                      {userData?.isEmailConfirmed
+                        ? '(Verified)'
+                        : '(Not Verified)'}
                     </label>
                     <div className="relative">
                       <span className="absolute left-4.5 top-4">
@@ -408,44 +423,65 @@ const UpdateProfile: React.FC = () => {
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
-                 Social accounts
+                  Social accounts
                 </h3>
               </div>
               <div className="p-7 flex flex-col gap-2">
                 {inputs.map((input, index) => (
-                  <div className="relative">
-                  <div className="flex gap-1" key={index}>
-                    <span className="absolute left-4.5 top-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-link">
-                        <g opacity="0.8">
-                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                        </g>
-                      </svg>
-                    </span>
-                    <input
-                      className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      id={`fullname${index}`}
-                      placeholder="Devid Jhon"
-                      value={input}
-                      onChange={(event) => handleInputChange(index, event)}
-                    />
-                    {index !== 0 && <button onClick={() => handleRemoveClick(index)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-x-circle hover:text-danger">
-                        <g opacity="0.8">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </g>
+                  <div className="relative" key={index}>
+                    <div className="flex gap-1">
+                      <span className="absolute left-4.5 top-4">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="feather feather-link"
+                        >
+                          <g opacity="0.8">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                          </g>
                         </svg>
-                      </button>
-                      }
+                      </span>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        id={`fullname${index}`}
+                        placeholder="Devid Jhon"
+                        value={input}
+                        onChange={(event) => handleInputChange(index, event)}
+                      />
+                      {index !== 0 && (
+                        <button onClick={() => handleRemoveClick(index)}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="feather feather-x-circle hover:text-danger"
+                          >
+                            <g opacity="0.8">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <line x1="15" y1="9" x2="9" y2="15"></line>
+                              <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </g>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  </div>
-                ))
-                }
-                
+                ))}
               </div>
             </div>
           </div>
