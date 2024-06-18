@@ -8,7 +8,7 @@ const createToast=(title: string, msg: string, type: number)=>{toast.custom((t) 
       className={`${
         t.visible ? 'animate-enter' : 'animate-leave'
       }
-      max-w-md w-full ${type=='0'?"bg-[#04b20c]":type=='1'?"bg-[#eab90f]":"bg-[#e13f32]"} shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+      max-w-md w-full ${type==0?"bg-[#04b20c]":type==1?"bg-[#eab90f]":"bg-[#e13f32]"} shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
     >
       <div className="flex-1 w-0 p-4 ">
         <div className="flex items-start">
@@ -37,12 +37,12 @@ const createToast=(title: string, msg: string, type: number)=>{toast.custom((t) 
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               className="h-6 w-6">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="M6 18L18 6M6 6l12 12" />
             </svg>
           </span>
@@ -73,7 +73,7 @@ if (alertSettings){
     const value=isNaN(parseFloat(alertSetting.value))?alertSetting.value:parseFloat(alertSetting.value);
     const para=alertSetting.criterion<2?"delta_"+alertSetting.para:alertSetting.para;
     if (alertSetting.id=="ALL"){
-      Object.keys(dataJSON).map((id:string)=>
+      Object.keys(dataJSON).map((id:number)=>
       {
         const condition=alertSetting.criterion=='0'?value<=-1*dataJSON[id][para]:
         alertSetting.criterion=='1'||alertSetting.criterion=='3'?value>=dataJSON[id][para]:
