@@ -13,7 +13,6 @@ const UpdateProfile: React.FC = () => {
   const [bio, setBio] = useState('');
   const [location, setLocation] = useState('');
   const [website, setWebsite] = useState('');
-  const [avatar, setAvatar] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,7 +56,6 @@ const UpdateProfile: React.FC = () => {
           setBio(res.data.profile.bio);
           setLocation(res.data.profile.location);
           setWebsite(res.data.profile.website);
-          setAvatar(res.data.profile.avatar);
           setUsername(res.data.username);
           setEmail(res.data.email);
           setUserData(res.data);
@@ -453,7 +451,7 @@ const UpdateProfile: React.FC = () => {
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
                         id={`fullname${index}`}
-                        placeholder="Devid Jhon"
+                        placeholder="https://www.example.com/username"
                         value={input}
                         onChange={(event) => handleInputChange(index, event)}
                       />

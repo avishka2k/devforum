@@ -13,13 +13,15 @@ const TableTwo = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}/byuser`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token?.access_token}`,
+      .get(
+        `${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}/byuser`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token?.access_token}`,
+          },
         },
-      
-      })
+      )
       .then((response) => {
         setpostData(response.data);
       });
@@ -66,13 +68,13 @@ const TableTwo = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 stroke="currentColor"
                 className="w-6 h-6"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
                 ></path>
               </svg>
@@ -83,10 +85,10 @@ const TableTwo = () => {
           </div>
         </div>
       ) : (
-        postData.map((post: any, key: any) => (
+        postData.map((post: any, index: number) => (
           <div
             className="grid grid-cols-9 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5"
-            key={key}
+            key={index}
           >
             <div className="col-span-3 flex items-center">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -103,7 +105,7 @@ const TableTwo = () => {
             <div className="col-span-3 hidden items-center sm:flex">
               <div className="text-sm grid grid-cols-3 gap-1 text-black dark:text-white">
                 {post.tags.map((tag: any) => (
-                  <button className="inline-flex rounded-full bg-[#EFEFEF] px-3 py-1 text-xs font-medium text-[#212B36] hover:bg-opacity-90">
+                  <button key={tag.id} className="inline-flex rounded-full bg-[#EFEFEF] px-3 py-1 text-xs font-medium text-[#212B36] hover:bg-opacity-90">
                     {tag.name}
                   </button>
                 ))}
@@ -143,7 +145,10 @@ const TableTwo = () => {
                 postData={postData}
                 setpostData={setpostData}
               />
-              <Link to={`/posts/${post.id}/update`} className="hover:text-primary">
+              <Link
+                to={`/posts/${post.id}/update`}
+                className="hover:text-primary"
+              >
                 <svg
                   className="fill-current"
                   width="18"

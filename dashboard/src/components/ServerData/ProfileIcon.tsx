@@ -11,10 +11,12 @@ const ProfileIcon: React.FC<ProfileIconProps> = ({ size = '12' }) => {
   const user = userData?.username;
 
   return avatar ? (
-    <img src={avatar} alt="sd" className={`h-${size}`} />
+    <img src={avatar} alt={user} className={`h-${size}`} />
   ) : (
     <img
-      src="https://devforum-s3.sgp1.cdn.digitaloceanspaces.com/basic/default-user-icon.png"
+      src={`${
+        import.meta.env.VITE_SPACES_CDN_ENDPOINT
+      }/basic/default-user-icon.png`}
       alt="User"
       className={`h-${size}`}
     />
