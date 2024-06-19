@@ -13,6 +13,7 @@ import { RegisterDto } from './dtos/register.dto';
 import * as argon2 from 'argon2';
 import * as AWS from 'aws-sdk';
 import { LoginDto } from './dtos/login.dto';
+import { ProfileDto } from './dtos/profile.dto';
 
 @Injectable()
 export class UserService {
@@ -115,7 +116,7 @@ export class UserService {
 
   async updateProfile(
     userId: number,
-    profileData: Partial<Profile>,
+    profileData: ProfileDto,
     file: Express.Multer.File,
   ): Promise<Profile> {
     const user = await this.userRepository.findOne({
@@ -138,6 +139,7 @@ export class UserService {
 
       profile.avatar = imagename;
     }
+
     Object.assign(profile, profileData);
     delete user.password;
     await this.profileRepository.save(profile);

@@ -30,6 +30,18 @@ export class Profile {
     website: string;
 
     @Column({nullable: true})
+    link1: string;
+
+    @Column({nullable: true})
+    link2: string;
+
+    @Column({nullable: true})
+    link3: string;
+
+    @Column({nullable: true})
+    link4: string;
+
+    @Column({nullable: true})
     updated_at: Date;
 
     @OneToOne(() => User, user => user.profile)

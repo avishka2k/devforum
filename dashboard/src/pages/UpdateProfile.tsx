@@ -5,6 +5,7 @@ import TokenUser from './Authentication/TokenUser';
 import axios from 'axios';
 import Notification from '../components/Notification';
 import ProfileIcon from '../components/ServerData/ProfileIcon';
+import IconSelector from '../components/IconSelector';
 
 const UpdateProfile: React.FC = () => {
   const [userData, setUserData] = useState({} as any);
@@ -18,25 +19,10 @@ const UpdateProfile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
   const token = TokenUser();
-  const [inputs, setInputs] = useState(['']);
-
-  const handleInputChange = (index: any, event: any) => {
-    const values = [...inputs];
-    values[index] = event.target.value;
-    setInputs(values);
-
-    if (index === values.length - 1 && event.target.value !== '') {
-      setInputs([...values, '']);
-    }
-  };
-
-  const handleRemoveClick = (index: any) => {
-    if (index !== 0) {
-      const values = [...inputs];
-      values.splice(index, 1);
-      setInputs(values);
-    }
-  };
+  const [link1, setLink1] = useState('');
+  const [link2, setLink2] = useState('');
+  const [link3, setLink3] = useState('');
+  const [link4, setLink4] = useState('');
 
   useEffect(() => {
     getUserData();
@@ -59,6 +45,10 @@ const UpdateProfile: React.FC = () => {
           setUsername(res.data.username);
           setEmail(res.data.email);
           setUserData(res.data);
+          setLink1(res.data.profile.link1 || '');
+          setLink2(res.data.profile.link2 || '');
+          setLink3(res.data.profile.link3 || '');
+          setLink4(res.data.profile.link4 || '');
         });
     }
   };
@@ -74,6 +64,10 @@ const UpdateProfile: React.FC = () => {
     formData.append('bio', bio);
     formData.append('location', location);
     formData.append('website', website);
+    formData.append('link1', link1);
+    formData.append('link2', link2);
+    formData.append('link3', link3);
+    formData.append('link4', link4);
     if (file) {
       formData.append('file', file);
     }
@@ -120,17 +114,16 @@ const UpdateProfile: React.FC = () => {
     <DefaultLayout>
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Update Profile" />
-
-        <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-5 xl:col-span-3">
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Personal Information
-                </h3>
-              </div>
-              <div className="p-7">
-                <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-5 gap-8">
+            <div className="col-span-5 xl:col-span-3">
+              <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
+                  <h3 className="font-medium text-black dark:text-white">
+                    Personal Information
+                  </h3>
+                </div>
+                <div className="p-7">
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
                       <label
@@ -413,18 +406,80 @@ const UpdateProfile: React.FC = () => {
                       {loading ? 'Updating...' : 'Update'}
                     </button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="col-span-5 xl:col-span-2">
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Social accounts
-                </h3>
-              </div>
-              <div className="p-7 flex flex-col gap-2">
+            <div className="col-span-5 xl:col-span-2">
+              <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
+                  <h3 className="font-medium text-black dark:text-white">
+                    Social accounts
+                  </h3>
+                </div>
+
+                <div className="p-7 flex flex-col gap-2">
+                  <div className="relative">
+                    <div className="flex gap-1">
+                      <span className="absolute left-4.5 top-4">
+                        <IconSelector url={link1} />
+                      </span>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        name="link1"
+                        placeholder="https://www.example.com/username"
+                        value={link1}
+                        onChange={(e) => setLink1(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="flex gap-1">
+                      <span className="absolute left-4.5 top-4">
+                        <IconSelector url={link2} />
+                      </span>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        name="link2"
+                        placeholder="https://www.example.com/username"
+                        value={link2}
+                        onChange={(e) => setLink2(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="flex gap-1">
+                      <span className="absolute left-4.5 top-4">
+                        <IconSelector url={link3} />
+                      </span>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        name="link3"
+                        placeholder="https://www.example.com/username"
+                        value={link3}
+                        onChange={(e) => setLink3(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="flex gap-1">
+                      <span className="absolute left-4.5 top-4">
+                        <IconSelector url={link4} />
+                      </span>
+                      <input
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        type="text"
+                        name="link4"
+                        placeholder="https://www.example.com/username"
+                        value={link4}
+                        onChange={(e) => setLink4(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* <div className="p-7 flex flex-col gap-2">
                 {inputs.map((input, index) => (
                   <div className="relative" key={index}>
                     <div className="flex gap-1">
@@ -480,10 +535,11 @@ const UpdateProfile: React.FC = () => {
                     </div>
                   </div>
                 ))}
+              </div> */}
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </DefaultLayout>
   );
