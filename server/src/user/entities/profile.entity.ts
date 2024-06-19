@@ -1,37 +1,42 @@
-import { 
-    Entity, 
-    PrimaryGeneratedColumn, 
-    Column, 
-    OneToOne, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { SocialLink } from './social.entity';
 
 @Entity({ name: 'profiles' })
 export class Profile {
-    @PrimaryGeneratedColumn({ type: 'bigint'})
-    id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
 
-    @Column({nullable: true})
-    fullname: string;
+  @Column({ nullable: true })
+  fullname: string;
 
-    @Column({nullable: true})
-    avatar: string;
+  @Column({ nullable: true })
+  avatar: string;
 
-    @Column({nullable: true})
-    headline: string;
+  @Column({ nullable: true })
+  headline: string;
 
-    @Column({nullable: true})
-    bio: string;
+  @Column({ nullable: true })
+  bio: string;
 
-    @Column({nullable: true})
-    location: string;
+  @Column({ nullable: true })
+  location: string;
 
-    @Column({nullable: true})
-    website: string;
+  @Column({ nullable: true })
+  website: string;
 
-    @Column({nullable: true})
-    updated_at: Date;
+  @Column({ nullable: true })
+  updated_at: Date;
 
-    @OneToOne(() => User, user => user.profile)
-    user: User;
+  @OneToOne(() => User, (user) => user.profile)
+  user: User;
+
+  @OneToMany(() => SocialLink, (socialLink) => socialLink.profile, { cascade: true })
+  socialLinks: SocialLink[];
 }

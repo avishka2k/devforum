@@ -5,6 +5,12 @@ import TokenUser from './Authentication/TokenUser';
 import axios from 'axios';
 import Notification from '../components/Notification';
 import ProfileIcon from '../components/ServerData/ProfileIcon';
+import IconSelector from '../components/IconSelector';
+
+interface SocialLink {
+  id: string;
+  url: string;
+}
 
 const UpdateProfile: React.FC = () => {
   const [userData, setUserData] = useState({} as any);
@@ -18,23 +24,23 @@ const UpdateProfile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
   const token = TokenUser();
-  const [inputs, setInputs] = useState(['']);
+  const [social, setSocial] = useState([{ id: '', url: '' }]);
 
-  const handleInputChange = (index: any, event: any) => {
-    const values = [...inputs];
-    values[index] = event.target.value;
-    setInputs(values);
-
-    if (index === values.length - 1 && event.target.value !== '') {
-      setInputs([...values, '']);
+  const handleInputChange = (link: any, event: any) => {
+    const values = [...social];
+    values[link].url = event.target.value;
+    setSocial(values);
+  
+    if (link === social.length - 1 && event.target.value) {
+      setSocial([...social, { id: '', url: '' }]);
     }
   };
 
   const handleRemoveClick = (index: any) => {
     if (index !== 0) {
-      const values = [...inputs];
+      const values = [...social];
       values.splice(index, 1);
-      setInputs(values);
+      setSocial(values);
     }
   };
 
@@ -59,6 +65,10 @@ const UpdateProfile: React.FC = () => {
           setUsername(res.data.username);
           setEmail(res.data.email);
           setUserData(res.data);
+          setSocial([...res.data.profile.socialLinks.map((social: SocialLink) => ({
+            id: social.id,
+            url: social.url,
+          })), {url: ''}]);
         });
     }
   };
@@ -74,6 +84,10 @@ const UpdateProfile: React.FC = () => {
     formData.append('bio', bio);
     formData.append('location', location);
     formData.append('website', website);
+    social.filter(link => link && link.url && link.url !== '').forEach((link) => {
+      const linkData = link.id ? { id: link.id, url: link.url } : { url: link.url };
+      formData.append('socials[]', JSON.stringify(linkData));
+    });
     if (file) {
       formData.append('file', file);
     }
@@ -115,6 +129,7 @@ const UpdateProfile: React.FC = () => {
       setFile(e.target.files[0]);
     }
   };
+
 
   return (
     <DefaultLayout>
@@ -425,36 +440,20 @@ const UpdateProfile: React.FC = () => {
                 </h3>
               </div>
               <div className="p-7 flex flex-col gap-2">
-                {inputs.map((input, index) => (
+                {social.map((link: any, index) => (
                   <div className="relative" key={index}>
-                    <div className="flex gap-1">
-                      <span className="absolute left-4.5 top-4">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="feather feather-link"
-                        >
-                          <g opacity="0.8">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                          </g>
-                        </svg>
-                      </span>
-                      <input
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        type="text"
-                        id={`fullname${index}`}
-                        placeholder="https://www.example.com/username"
-                        value={input}
-                        onChange={(event) => handleInputChange(index, event)}
-                      />
+                  <div className="flex gap-1">
+                    <span className="absolute left-4.5 top-4">
+                      <IconSelector url={link.url} />
+                    </span>
+                    <input
+                      className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                      type="text"
+                      id={`fullname${index}`}
+                      placeholder="https://www.example.com/username"
+                      value={link.url}
+                      onChange={event => handleInputChange(index, event)}
+                    />
                       {index !== 0 && (
                         <button onClick={() => handleRemoveClick(index)}>
                           <svg

@@ -8,12 +8,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
 import { VerificationService } from '../email/verification/verification.service';
 import EmailService from '../email/email.service';
+import { SocialLink } from './entities/social.entity';
+
 config();
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([Profile]),
+    TypeOrmModule.forFeature([SocialLink]),
     JwtModule.register({
         global: true,
         secret: process.env.JWT_SECRET,
