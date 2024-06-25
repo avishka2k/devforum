@@ -1,6 +1,6 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import TableTwo from '../components/Tables/TableTwo';
-import DefaultLayout from '../layout/DefaultLayout';
+import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import TableTwo from '../../components/Tables/TableTwo';
+import DefaultLayout from '../../layout/DefaultLayout';
 
 const Posts = () => {
   return (

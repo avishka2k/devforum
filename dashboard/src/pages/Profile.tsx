@@ -36,19 +36,19 @@ const Profile = () => {
                   >
                     <span>
                       <svg
-                        className="fill-current"
+                        xmlns="http://www.w3.org/2000/svg"
                         width="16"
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="feather feather-edit"
                       >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M21.364 2.636C22.1452 3.41727 22.1452 4.68342 21.364 5.46465L8.70711 18.1213C8.51957 18.3089 8.26521 18.4358 7.98818 18.4795L3 19.25L3.7705 14.2618C3.81423 13.9848 3.94111 13.7304 4.12866 13.5429L16.7855 0.885933C17.5667 0.104704 18.8329 0.104704 19.6141 0.885933L21.364 2.636ZM5.58197 15.9405L9.09752 15.3155L18.364 6.04894L15.9511 3.63604L6.68454 12.9026L6.05953 16.4181L5.58197 15.9405Z"
-                          fill="white"
-                        />
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
                     </span>
 
@@ -71,7 +71,11 @@ const Profile = () => {
                     : 'User'}
                 </h3>
                 <p className="font-medium">
-                  {userData?.profile.headline ? userData.profile.headline : <></>}
+                  {userData?.profile.headline ? (
+                    userData.profile.headline
+                  ) : (
+                    <></>
+                  )}
                 </p>
                 <p className="text-sm pt-2">Joined on {formattedDate}</p>
 
