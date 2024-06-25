@@ -9,20 +9,20 @@ import IconSelector from '../components/IconSelector';
 
 const UpdateProfile: React.FC = () => {
   const [userData, setUserData] = useState({} as any);
-  const [fullName, setFullName] = useState('');
-  const [headline, setHeadline] = useState('');
-  const [bio, setBio] = useState('');
-  const [location, setLocation] = useState('');
-  const [website, setWebsite] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState<string>('');
+  const [headline, setHeadline] = useState<string>('');
+  const [bio, setBio] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [website, setWebsite] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
+  const [link1, setLink1] = useState<string>('');
+  const [link2, setLink2] = useState<string>('');
+  const [link3, setLink3] = useState<string>('');
+  const [link4, setLink4] = useState<string>('');
   const token = TokenUser();
-  const [link1, setLink1] = useState('');
-  const [link2, setLink2] = useState('');
-  const [link3, setLink3] = useState('');
-  const [link4, setLink4] = useState('');
 
   useEffect(() => {
     getUserData();
@@ -33,22 +33,24 @@ const UpdateProfile: React.FC = () => {
       axios
         .get(`${import.meta.env.VITE_API_ENDPOINT}/user/${token.userId}`, {
           headers: {
-            Authorization: `Bearer ${token.access_token}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token?.access_token}`,
           },
         })
         .then((res) => {
-          setFullName(res.data.profile.fullname);
-          setHeadline(res.data.profile.headline);
-          setBio(res.data.profile.bio);
-          setLocation(res.data.profile.location);
-          setWebsite(res.data.profile.website);
+          const profile = res.data.profile;
+          setFullName(profile.fullname || '');
+          setHeadline(profile.headline || '');
+          setBio(profile.bio || '');
+          setLocation(profile.location || '');
+          setWebsite(profile.website || '');
           setUsername(res.data.username);
           setEmail(res.data.email);
           setUserData(res.data);
-          setLink1(res.data.profile.link1 || '');
-          setLink2(res.data.profile.link2 || '');
-          setLink3(res.data.profile.link3 || '');
-          setLink4(res.data.profile.link4 || '');
+          setLink1(profile.link1);
+          setLink2(profile.link2);
+          setLink3(profile.link3);
+          setLink4(profile.link4);
         });
     }
   };

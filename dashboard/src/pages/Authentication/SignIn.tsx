@@ -45,7 +45,7 @@ const SignIn: React.FC = () => {
 
           const decodedToken = jwtDecode(response.data.access_token);
 
-          const userProfile = await axios.get(
+          await axios.get(
             `${import.meta.env.VITE_API_ENDPOINT}/user/${
               decodedToken.sub
             }/profile`,
@@ -55,20 +55,16 @@ const SignIn: React.FC = () => {
               },
             },
           );
-          if (userProfile.data) {
-            // Save the user profile to local storage or state management
-            localStorage.setItem(
-              'user_profile',
-              JSON.stringify(userProfile.data),
-            );
-          }
-          Notification({message: 'Sign in successful! Redirecting to dashboard...', type: 'success'});
+          Notification({
+            message: 'Sign in successful! Redirecting to dashboard...',
+            type: 'success',
+          });
           setTimeout(() => {
             navigate('/');
           }, 1000);
         }
       } catch (error: any) {
-        Notification({message: error.response.data.message, type: 'error'});
+        Notification({ message: error.response.data.message, type: 'error' });
       } finally {
         setLoading(false);
       }

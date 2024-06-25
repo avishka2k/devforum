@@ -105,7 +105,10 @@ const TableTwo = () => {
             <div className="col-span-3 hidden items-center sm:flex">
               <div className="text-sm grid grid-cols-3 gap-1 text-black dark:text-white">
                 {post.tags.map((tag: any) => (
-                  <button key={tag.id} className="inline-flex rounded-full bg-[#EFEFEF] px-3 py-1 text-xs font-medium text-[#212B36] hover:bg-opacity-90">
+                  <button
+                    key={tag.id}
+                    className="inline-flex rounded-full bg-[#EFEFEF] px-3 py-1 text-xs font-medium text-[#212B36] hover:bg-opacity-90"
+                  >
                     {tag.name}
                   </button>
                 ))}
@@ -147,24 +150,22 @@ const TableTwo = () => {
               />
               <Link
                 to={`/posts/${post.id}/update`}
-                className="hover:text-primary"
+                className="hover:text-primary pb-1"
               >
                 <svg
-                  className="fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
                   width="18"
                   height="18"
-                  viewBox="0 0 18 18"
+                  viewBox="0 0 24 24"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="feather feather-edit"
                 >
-                  <path
-                    d="M16.8754 11.6719C16.5379 11.6719 16.2285 11.9531 16.2285 12.3187V14.8219C16.2285 15.075 16.0316 15.2719 15.7785 15.2719H2.22227C1.96914 15.2719 1.77227 15.075 1.77227 14.8219V12.3187C1.77227 11.9812 1.49102 11.6719 1.12539 11.6719C0.759766 11.6719 0.478516 11.9531 0.478516 12.3187V14.8219C0.478516 15.7781 1.23789 16.5375 2.19414 16.5375H15.7785C16.7348 16.5375 17.4941 15.7781 17.4941 14.8219V12.3187C17.5223 11.9531 17.2129 11.6719 16.8754 11.6719Z"
-                    fill=""
-                  />
-                  <path
-                    d="M8.55074 12.3469C8.66324 12.4594 8.83199 12.5156 9.00074 12.5156C9.16949 12.5156 9.31012 12.4594 9.45074 12.3469L13.4726 8.43752C13.7257 8.1844 13.7257 7.79065 13.5007 7.53752C13.2476 7.2844 12.8539 7.2844 12.6007 7.5094L9.64762 10.4063V2.1094C9.64762 1.7719 9.36637 1.46252 9.00074 1.46252C8.66324 1.46252 8.35387 1.74377 8.35387 2.1094V10.4063L5.40074 7.53752C5.14762 7.2844 4.75387 7.31252 4.50074 7.53752C4.24762 7.79065 4.27574 8.1844 4.50074 8.43752L8.55074 12.3469Z"
-                    fill=""
-                  />
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                 </svg>
               </Link>
             </div>

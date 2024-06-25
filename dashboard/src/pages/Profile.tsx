@@ -71,7 +71,7 @@ const Profile = () => {
                     : 'User'}
                 </h3>
                 <p className="font-medium">
-                  {userData?.profile ? userData.profile.headline : <></>}
+                  {userData?.profile.headline ? userData.profile.headline : <></>}
                 </p>
                 <p className="text-sm pt-2">Joined on {formattedDate}</p>
 
@@ -152,9 +152,9 @@ const Profile = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="feather feather-file-text"
                     >
                       <g opacity="0.8">
@@ -181,9 +181,9 @@ const Profile = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="feather feather-message-square mt-0.5"
                     >
                       <g opacity="0.8">
@@ -207,9 +207,9 @@ const Profile = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="feather feather-eye mt-0.5"
                     >
                       <g opacity="0.8">
