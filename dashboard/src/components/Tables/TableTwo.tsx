@@ -40,7 +40,7 @@ const TableTwo = () => {
 
   return (
     <div className="rounded-sm border h-full border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-6 bg-gray-2 dark:bg-meta-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <p className="font-medium">Post Name</p>
         </div>
@@ -118,7 +118,15 @@ const TableTwo = () => {
               <p className="text-sm text-black dark:text-white">{views}</p>
             </div>
             <div className="col-span-1 flex items-center">
-              <p className="text-sm text-black dark:text-white">
+              <p
+                className={`text-xs inline-flex rounded-full bg-opacity-10 py-1 px-3 ${
+                  new Date(post.publish_at) > new Date()
+                    ? 'bg-danger text-danger'
+                    : post.is_published
+                    ? 'bg-success text-success'
+                    : 'bg-warning text-warning'
+                }`}
+              >
                 {status({ post })}
               </p>
             </div>
