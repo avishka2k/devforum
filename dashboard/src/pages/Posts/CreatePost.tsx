@@ -1,65 +1,50 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import DefaultLayout from '../layout/DefaultLayout';
-import EditorJs from '../components/Editor';
+import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import DefaultLayout from '../../layout/DefaultLayout';
+import EditorJs from '../../components/Editor';
 import axios from 'axios';
+import TokenUser from '../Authentication/TokenUser';
+import Notification from '../../components/Notification';
 import ReactSelect from 'react-select';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import TokenUser from './Authentication/TokenUser';
-import Notification from '../components/Notification';
-
-interface TagOption {
+interface Option {
   value: string;
   label: string;
 }
 
+interface Tag {
+  id: string;
+  name: string;
+}
+
 const CreatePost: React.FC = () => {
-  const { id: itemId } = useParams<{ id: string }>();
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [options, setOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
-  const [tags, setTags] = useState<TagOption[]>([]);
-  const [allTags, setAllTags] = useState<TagOption[]>([]);
-  const [coverImage, setCoverImage] = useState<string>('');
   const navigate = useNavigate();
-  const token = TokenUser();
   let buttonText;
 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_ENDPOINT}/post/tags`)
-      .then((response) =>
-        setAllTags(
-          response.data.map((tag: any) => ({ value: tag.id, label: tag.name })),
-        ),
-      )
-      .catch((error) => console.error(error));
-
-    if (itemId) {
-      axios
-        .get(`${import.meta.env.VITE_API_ENDPOINT}/post/${itemId}/bypost`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token?.access_token}`,
-          },
-        })
-        .then((response) => {
-          const item = response.data;
-          setTitle(item.title);
-          setContent(item.content);
-          setCoverImage(item.image);
-          setTags(
-            item.tags.map((tag: any) => ({ value: tag.id, label: tag.name })),
-          );
-        })
-        .catch((error) => console.error(error));
-    }
-  }, [itemId]);
+      .then((response) => {
+        const fetchedTags = response.data.map((tag: Tag) => ({
+          value: tag.id,
+          label: tag.name,
+        }));
+        setOptions(fetchedTags);
+      })
+      .catch((error) => {
+        console.error('Error fetching tags:', error);
+      });
+  }, []);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -69,18 +54,22 @@ const CreatePost: React.FC = () => {
 
   const removeImage = () => {
     setFile(null);
-    setCoverImage('');
+  };
+
+  const handleTagsChange = (selectedTags: string[]) => {
+    if (selectedTags.length > 5) {
+      Notification({
+        message: 'You can only select up to 5 tags',
+        type: 'error',
+      });
+      return;
+    }
+    setTags(selectedTags);
   };
 
   const handleContentChange = (data: any) => {
     setContent(data);
   };
-
-  if (isChecked) {
-    buttonText = loading ? 'Scheduling...' : 'Schedule';
-  } else {
-    buttonText = loading ? 'Updating...' : 'Update';
-  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -88,31 +77,30 @@ const CreatePost: React.FC = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
-    tags.forEach((tag) => formData.append('tags[]', tag.label));
+    tags.forEach((tag) => formData.append('tags[]', tag));
     if (file) {
       formData.append('file', file);
     }
+
+    formData.append('is_published', isChecked.toString());
     formData.append('publish_at', selectedDateTime?.toISOString() || '');
 
+    const token = TokenUser();
+
     try {
-      if (itemId) {
-        const response = await axios.put(
-          `${import.meta.env.VITE_API_ENDPOINT}/post/${itemId}`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${token?.access_token}`,
-            },
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_ENDPOINT}/post/${token?.userId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token?.access_token}`,
           },
-        );
-        if (response.status === 200) {
-          Notification({
-            message: 'Post updated successfully',
-            type: 'success',
-          });
-          navigate('/posts');
-        }
+        },
+      );
+      if (response.status === 201) {
+        Notification({ message: 'Post created successfully', type: 'success' });
+        navigate('/posts');
       }
     } catch (error: any) {
       console.log('Error submitting the form:', error);
@@ -126,6 +114,12 @@ const CreatePost: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (isChecked) {
+    buttonText = loading ? 'Scheduling...' : 'Schedule';
+  } else {
+    buttonText = loading ? 'Creating...' : 'Publish';
+  }
 
   return (
     <DefaultLayout>
@@ -158,7 +152,7 @@ const CreatePost: React.FC = () => {
                     placeholder="Type your content"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea> */}
-                  <EditorJs value={content} onChange={handleContentChange} />
+                  <EditorJs onChange={handleContentChange} />
                 </div>
               </div>
             </div>
@@ -175,10 +169,10 @@ const CreatePost: React.FC = () => {
                     id="FileUpload"
                     className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
                   >
-                    {file || coverImage ? (
+                    {file ? (
                       <div className="relative">
                         <img
-                          src={file ? URL.createObjectURL(file) : coverImage}
+                          src={URL.createObjectURL(file)}
                           alt="Selected"
                           className="w-full h-full object-cover"
                         />
@@ -258,11 +252,11 @@ const CreatePost: React.FC = () => {
                     Tags
                   </label>
                   <ReactSelect
+                    id="tagSelector"
+                    options={options}
                     isMulti
-                    value={tags}
-                    options={allTags}
-                    onChange={(selectedOptions) =>
-                      setTags(selectedOptions as TagOption[])
+                    onChange={(selectedTags) =>
+                      handleTagsChange(selectedTags.map((tag) => tag.label))
                     }
                   />
                 </div>
@@ -302,7 +296,7 @@ const CreatePost: React.FC = () => {
                   )}
                 </div>
                 <div className="flex flex-row gap-5 mt-4">
-                  {/* <button className="inline-flex items-center gap-3 rounded-md bg-primary px-5 py-3 text-white hover:bg-opacity-90"><span className="animate-spin"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="path-1-inside-1_1881_16183" fill="white"><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z"></path></mask><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z" stroke="white" stroke-width="14" mask="url(#path-1-inside-1_1881_16183)"></path></svg></span>Loading...</button> */}
+                  {/* <button className="inline-flex items-center gap-3 rounded-md bg-primary px-5 py-3 text-white hover:bg-opacity-90"><span className="animate-spin"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="path-1-inside-1_1881_16183" fill="white"><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z"></path></mask><path d="M15.328 23.5293C17.8047 22.8144 19.9853 21.321 21.547 19.2701C23.1087 17.2193 23.9686 14.72 23.9992 12.1424C24.0297 9.56481 23.2295 7.04587 21.7169 4.95853C20.2043 2.8712 18.0597 1.32643 15.6007 0.552947C13.1417 -0.220538 10.499 -0.181621 8.0638 0.663935C5.62864 1.50949 3.53049 3.11674 2.07999 5.24771C0.629495 7.37868 -0.096238 9.92009 0.0102418 12.4957C0.116722 15.0713 1.04975 17.5441 2.6712 19.5481L4.96712 17.6904C3.74474 16.1796 3.04133 14.3154 2.96106 12.3737C2.88079 10.432 3.42791 8.51604 4.52142 6.90953C5.61493 5.30301 7.19671 4.09133 9.03255 3.45387C10.8684 2.81642 12.8607 2.78708 14.7145 3.3702C16.5683 3.95332 18.1851 5.1179 19.3254 6.69152C20.4658 8.26514 21.0691 10.1641 21.046 12.1074C21.023 14.0506 20.3748 15.9347 19.1974 17.4809C18.02 19.027 16.3761 20.1528 14.5089 20.6918L15.328 23.5293Z" stroke="white" strokeWidth="14" mask="url(#path-1-inside-1_1881_16183)"></path></svg></span>Loading...</button> */}
                   <button className="flex w-full justify-center rounded border border-primary p-3 font-medium text-primary hover:bg-opacity-90">
                     Save As Draft
                   </button>

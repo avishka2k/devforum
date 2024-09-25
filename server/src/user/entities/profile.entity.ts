@@ -18,6 +18,9 @@ export class Profile {
     avatar: string;
 
     @Column({nullable: true})
+    headline: string;
+
+    @Column({nullable: true})
     bio: string;
 
     @Column({nullable: true})
@@ -25,6 +28,18 @@ export class Profile {
 
     @Column({nullable: true})
     website: string;
+
+    @Column({nullable: true})
+    link1: string;
+
+    @Column({nullable: true})
+    link2: string;
+
+    @Column({nullable: true})
+    link3: string;
+
+    @Column({nullable: true})
+    link4: string;
 
     @Column({nullable: true})
     updated_at: Date;

@@ -7,33 +7,52 @@ interface EditorJsComponentProps {
 }
 
 const EditorJs: React.FC<EditorJsComponentProps> = ({ onChange, value }) => {
-const editorRef = useRef<any>(null);
+  const editorRef = useRef<any>(null);
 
   return (
-      <Editor
-        apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-        onInit={(_evt, editor) => editorRef.current = editor}
-        initialValue={value || "<p>Type your content</p>"}   
-        init={{
-          height: 500,
-          menubar: false,
-          tinydrive_token_provider: 'URL_TO_YOUR_TOKEN_PROVIDER',
-          plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'editimage', 'tinydrive', 'importcss'
-          ],
-          toolbar: "undo redo | revisionhistory | aidialog aishortcuts | blocks fontsizeinput | bold italic | align numlist bullist | link image | table math media pageembed | lineheight  outdent indent | strikethrough forecolor backcolor formatpainter removeformat | charmap emoticons checklist | code fullscreen preview | save print | pagebreak anchor codesample footnotes mergetags | addtemplate inserttemplate | addcomment showcomments | ltr rtl casechange | spellcheckdialog a11ycheck",
-          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-          image_advtab: true,
-          setup: (editor) => {
-            editor.on('change', () => {
-              onChange(editor.getContent());
-            });
-          }
-        }}
-      />
+    <Editor
+      apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+      onInit={(_evt, editor) => (editorRef.current = editor)}
+      initialValue={value || '<p>Type your content</p>'}
+      init={{
+        height: 500,
+        menubar: 'favs file edit view insert format help',
+        tinydrive_token_provider: 'URL_TO_YOUR_TOKEN_PROVIDER',
+        plugins: [
+          'advlist',
+          'autolink',
+          'lists',
+          'link',
+          'image',
+          'charmap',
+          'preview',
+          'anchor',
+          'searchreplace',
+          'code',
+          'insertdatetime',
+          'media',
+          'table',
+          'code',
+          'help',
+          'wordcount',
+          'tinydrive',
+          'importcss',
+          'emoticons',
+          'codesample',
+        ],
+        toolbar:
+          'undo redo | revisionhistory | aidialog aishortcuts | blocks fontsizeinput | bold italic strikethrough forecolor backcolor formatpainter removeformat | align numlist bullist | link image emoticons codesample | table media | lineheight  outdent indent | charmap | ltr rtl | spellcheckdialog a11ycheck',
+        content_style:
+          'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+        image_advtab: true,
+        setup: (editor) => {
+          editor.on('change', () => {
+            onChange(editor.getContent());
+          });
+        },
+      }}
+    />
   );
-}
+};
 
 export default EditorJs;
