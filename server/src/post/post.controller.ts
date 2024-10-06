@@ -81,4 +81,22 @@ export class PostController {
   deletePost(@Param('postId') postId: number) {
     return this.postService.deletePost(postId);
   }
+
+  @UseGuards(AuthGuard)
+  @Delete('tags/:tagId')
+  deleteTag(@Param('tagId') tagId: number) {
+    return this.postService.deleteTag(tagId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('tags/:tagId')
+  updateTag(@Param('tagId') tagId: number, @Body() tagDto: TagDto) {
+    return this.postService.updateTag(tagId, tagDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('tags/:tagId/blogsCount')
+  postCountByTags(@Param('tagId') tagId: number) {
+    return this.postService.postCountByTags(tagId);
+  }
 }

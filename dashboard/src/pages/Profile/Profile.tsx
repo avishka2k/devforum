@@ -1,11 +1,11 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import DefaultLayout from '../layout/DefaultLayout';
+import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import DefaultLayout from '../../layout/DefaultLayout';
 import { Link } from 'react-router-dom';
-import ProfileIcon from '../components/ServerData/ProfileIcon';
-import UserData from '../components/ServerData/UserData';
-import PostData from '../components/ServerData/PostData';
+import ProfileIcon from '../../components/ServerData/ProfileIcon';
+import UserData from '../../components/ServerData/UserData';
+import PostData from '../../components/ServerData/PostData';
 import { Divider } from '@mui/material';
-import IconSelector from '../components/IconSelector';
+import IconSelector from '../../components/IconSelector';
 
 const Profile = () => {
   const userData = UserData();

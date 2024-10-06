@@ -271,4 +271,47 @@ export class PostService {
       }
     });
   }
+
+  async deleteTag(tagId: number) {
+    const tag = await this.tagRepository.findOne({ where: { id: tagId } });
+
+    if (!tag) {
+      throw new NotFoundException('Tag not found');
+    }
+
+    await this.tagRepository.delete(tagId);
+
+    return { message: 'Tag deleted successfully' };
+  }
+
+  async updateTag(tagId: number, tagDto: TagDto) {
+    const tag = await this.tagRepository.findOne({ where: { id: tagId } });
+
+    if (!tag) {
+      throw new NotFoundException('Tag not found');
+    }
+
+    tag.name = tagDto.name;
+
+    await this.tagRepository.save(tag);
+
+    return { message: 'Tag updated successfully' };
+  }
+
+  async postCountByTags(tagId: number) {
+    const tag = await this.tagRepository.findOne({ where: { id: tagId } });
+    if (!tag) {
+      throw new NotFoundException('Tag not found');
+    }
+
+    const posts = await this.postRepository.find({
+      where: { tags: { id: tagId } },
+    });
+
+    if (!posts || posts.length === 0) {
+      return 0;
+    }
+
+    return posts.length;
+  }
 }

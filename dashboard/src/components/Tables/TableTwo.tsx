@@ -39,7 +39,7 @@ const TableTwo = () => {
   };
 
   return (
-    <div className="rounded-sm border h-full border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-sm border h-full border-stroke bg-white shadow-card dark:border-strokedark dark:bg-boxdark">
       <div className="grid grid-cols-6 bg-gray-2 dark:bg-meta-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
         <div className="col-span-3 flex items-center">
           <p className="font-medium">Post Name</p>

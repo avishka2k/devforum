@@ -111,7 +111,7 @@ const UpdatePost: React.FC = () => {
             message: 'Post updated successfully',
             type: 'success',
           });
-          navigate('/posts');
+          navigate('/posts/all');
         }
       }
     } catch (error: any) {

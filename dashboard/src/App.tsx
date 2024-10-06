@@ -8,7 +8,7 @@ import SignUp from './pages/Authentication/SignUp';
 import Posts from './pages/Posts/Posts';
 import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
@@ -17,10 +17,14 @@ import PrivateRoutes from './pages/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import UpdateProfile from './pages/UpdateProfile';
+import UpdateProfile from './pages/Profile/UpdateProfile';
 import DraftPost from './pages/Posts/DraftPost';
 import UpdatePost from './pages/Posts/UpdatePost';
 import ScheduledPost from './pages/Posts/ScheduledPost';
+import Comments from './pages/Comments/Comments';
+import PostTags1 from './pages/Tags/PostTags1'; 
+import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -77,6 +81,24 @@ function App() {
               </>
             }
           />
+          <Route
+            path="/tags"
+            element={
+              <>
+                <PageTitle title="Create Posts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <PostTags1 />
+              </>
+            }
+          />
+          <Route
+            path="/comments"
+            element={
+              <>
+                <PageTitle title="Create Posts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <Comments />
+              </>
+            }
+            />
           <Route
             path="/posts/draft"
             element={

@@ -1,11 +1,11 @@
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import DefaultLayout from '../layout/DefaultLayout';
+import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import DefaultLayout from '../../layout/DefaultLayout';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import TokenUser from './Authentication/TokenUser';
+import TokenUser from './../Authentication/TokenUser';
 import axios from 'axios';
-import Notification from '../components/Notification';
-import ProfileIcon from '../components/ServerData/ProfileIcon';
-import IconSelector from '../components/IconSelector';
+import Notification from '../../components/Notification';
+import ProfileIcon from '../../components/ServerData/ProfileIcon';
+import IconSelector from '../../components/IconSelector';
 
 const UpdateProfile: React.FC = () => {
   const [userData, setUserData] = useState({} as any);
